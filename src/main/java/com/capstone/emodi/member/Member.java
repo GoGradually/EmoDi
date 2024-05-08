@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Email;
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = "username")
 })
-public class member {
+public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
