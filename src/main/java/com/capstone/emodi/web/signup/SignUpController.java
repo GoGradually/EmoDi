@@ -1,7 +1,5 @@
 package com.capstone.emodi.web.signup;
 
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.member.MemberRepository;
 import com.capstone.emodi.domain.signup.SignUpService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -12,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,9 +51,6 @@ public class SignUpController {
 
         @NotBlank
         private String tellNumber;
-
-        // Getters and Setters
-        // ...
     }
 
     @Getter
@@ -67,8 +61,5 @@ public class SignUpController {
         public SignupResponse(String message) {
             this.message = message;
         }
-
-        // Getters and Setters
-        // ...
     }
 }
