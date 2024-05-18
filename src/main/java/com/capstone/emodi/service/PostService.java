@@ -1,8 +1,10 @@
+// PostService.java
 package com.capstone.emodi.service;
 
 import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.domain.post.PostRepository;
+import com.capstone.emodi.exception.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +33,7 @@ public class PostService {
     // 게시글 수정
     public Post updatePost(Long postId, String title, String content, String imagePath) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
+                .orElseThrow(() -> new PostNotFoundException("해당 게시글이 없습니다. id=" + postId));
         post.update(title, content, imagePath);
         return post;
     }
@@ -39,7 +41,7 @@ public class PostService {
     // 게시글 삭제
     public void deletePost(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id=" + postId));
+                .orElseThrow(() -> new PostNotFoundException("해당 게시글이 없습니다. id=" + postId));
         postRepository.delete(post);
     }
 
@@ -75,5 +77,4 @@ public class PostService {
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
         return postRepository.findByMemberIdAndCreatedAtBetween(memberId, startOfDay, endOfDay);
     }
-
 }

@@ -1,0 +1,7 @@
+package com.capstone.emodi.exception;
+
+public class PostNotFoundException extends RuntimeException {
+    public PostNotFoundException(String message) {
+        super(message);
+    }
+}
