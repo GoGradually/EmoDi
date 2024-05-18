@@ -1,6 +1,7 @@
 package com.capstone.emodi.web.signup;
 
 import com.capstone.emodi.domain.signup.SignUpService;
+import com.capstone.emodi.security.JwtTokenProvider;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -19,18 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class SignUpController {
-
     private final SignUpService signUpService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> signup(@RequestBody @Valid SignupRequest signupRequest) {
         try {
             signUpService.signUp(signupRequest);
-            return ResponseEntity.ok(new SignupResponse("회원가입이 완료되었습니다."));
+            String token = jwtTokenProvider.generateToken(signupRequest.getLoginId());
+            return ResponseEntity.ok(new SignupResponse("회원가입이 완료되었습니다.", token));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new SignupResponse(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new SignupResponse(e.getMessage(), null));
         }
     }
+
     @Getter
     @Setter
     public static class SignupRequest {
@@ -57,9 +60,11 @@ public class SignUpController {
     @Setter
     private static class SignupResponse {
         private String message;
+        private String token;
 
-        public SignupResponse(String message) {
+        public SignupResponse(String message, String token) {
             this.message = message;
+            this.token = token;
         }
     }
 }

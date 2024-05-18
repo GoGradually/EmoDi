@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
         @UniqueConstraint(columnNames = "loginId"),
         @UniqueConstraint(columnNames = "email")
 })
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
