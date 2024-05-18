@@ -1,11 +1,15 @@
 package com.capstone.emodi.domain.member;
 
+import com.capstone.emodi.domain.post.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(uniqueConstraints = {
@@ -39,6 +43,8 @@ public class Member {
     @Column(nullable = false)
     private String tellNumber;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
 
     @Builder
     public Member(String loginId, String username, String password, String email, String tellNumber) {
