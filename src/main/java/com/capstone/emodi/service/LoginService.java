@@ -1,4 +1,4 @@
-package com.capstone.emodi.domain.login;
+package com.capstone.emodi.service;
 
 import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.domain.member.MemberRepository;
