@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class LoginService {
@@ -14,7 +17,7 @@ public class LoginService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public String login(String loginId, String password) {
+    public Map<String, String> login(String loginId, String password) {
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 아이디입니다."));
 
@@ -22,6 +25,13 @@ public class LoginService {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
-        return jwtTokenProvider.generateToken(loginId);
+        String accessToken = jwtTokenProvider.generateAccessToken(loginId);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(loginId);
+
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("accessToken", accessToken);
+        tokens.put("refreshToken", refreshToken);
+
+        return tokens;
     }
 }

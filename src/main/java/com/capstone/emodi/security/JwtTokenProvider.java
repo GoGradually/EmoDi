@@ -4,19 +4,40 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
-    private static final String JWT_SECRET = "EMODI-is-the-strongest-product";
-    private static final long JWT_EXPIRATION_MS = 864000000; // 10일
+    @Value("${jwt.secret}")
+    private String JWT_SECRET;
 
-    public String generateToken(String loginId) {
+    @Value("${jwt.access-token-expiration-ms}")
+    private long ACCESS_TOKEN_EXPIRATION_MS;
+
+    @Value("${jwt.refresh-token-expiration-ms}")
+    private long REFRESH_TOKEN_EXPIRATION_MS;
+
+    public String generateAccessToken(String loginId) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION_MS);
+        Date expiryDate = new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION_MS);
+
+        return Jwts.builder()
+                .setSubject(loginId)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, JWT_SECRET)
+                .compact();
+    }
+
+    public String generateRefreshToken(String loginId) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + REFRESH_TOKEN_EXPIRATION_MS);
 
         return Jwts.builder()
                 .setSubject(loginId)
@@ -35,7 +56,7 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateAccessToken(String token) {
         try {
             Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
             return true;
@@ -43,5 +64,28 @@ public class JwtTokenProvider {
             // 토큰 유효성 검사 실패
             return false;
         }
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
+            return true;
+        } catch (Exception ex) {
+            // 토큰 유효성 검사 실패
+            return false;
+        }
+    }
+    private final Set<String> refreshTokens = new HashSet<>();
+
+    public void storeRefreshToken(String refreshToken) {
+        refreshTokens.add(refreshToken);
+    }
+
+    public void removeRefreshToken(String refreshToken) {
+        refreshTokens.remove(refreshToken);
+    }
+
+    public boolean isRefreshTokenValid(String refreshToken) {
+        return refreshTokens.contains(refreshToken);
     }
 }

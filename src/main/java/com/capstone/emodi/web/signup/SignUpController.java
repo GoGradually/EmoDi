@@ -1,6 +1,6 @@
 package com.capstone.emodi.web.signup;
 
-import com.capstone.emodi.domain.signup.SignUpService;
+import com.capstone.emodi.service.SignUpService;
 import com.capstone.emodi.security.JwtTokenProvider;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -26,11 +28,10 @@ public class SignUpController {
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> signup(@RequestBody @Valid SignupRequest signupRequest) {
         try {
-            signUpService.signUp(signupRequest);
-            String token = jwtTokenProvider.generateToken(signupRequest.getLoginId());
-            return ResponseEntity.ok(new SignupResponse("회원가입이 완료되었습니다.", token));
+            Map<String, String> tokens = signUpService.signUp(signupRequest);
+            return ResponseEntity.ok(new SignupResponse("회원가입이 완료되었습니다.", tokens.get("accessToken"), tokens.get("refreshToken")));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new SignupResponse(e.getMessage(), null));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new SignupResponse(e.getMessage(), null, null));
         }
     }
 
@@ -60,11 +61,13 @@ public class SignUpController {
     @Setter
     private static class SignupResponse {
         private String message;
-        private String token;
+        private String accessToken;
+        private String refreshToken;
 
-        public SignupResponse(String message, String token) {
+        public SignupResponse(String message, String accessToken, String refreshToken) {
             this.message = message;
-            this.token = token;
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
         }
     }
 }
