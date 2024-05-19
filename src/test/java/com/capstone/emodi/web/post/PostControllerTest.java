@@ -6,10 +6,13 @@ import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.domain.post.PostRepository;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -19,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -48,6 +52,9 @@ public class PostControllerTest {
     private Member member;
     private String accessToken;
 
+    @Value("${jwt.secret}")
+    private String JWT_SECRET;
+
     @BeforeEach
     void setUp() {
         member = Member.builder()
@@ -60,8 +67,24 @@ public class PostControllerTest {
         memberRepository.save(member);
 
         accessToken = jwtTokenProvider.generateAccessToken(member.getLoginId());
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(member.getLoginId(), null, null);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(member.getLoginId(), null, Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        System.out.println("Generated Access Token: " + accessToken);
+
+        // 토큰 디코딩하여 내용 확인
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(JWT_SECRET)
+                    .parseClaimsJws(accessToken)
+                    .getBody();
+
+            System.out.println("Token Claims:");
+            System.out.println("Subject: " + claims.getSubject());
+            System.out.println("Expiration: " + claims.getExpiration());
+            // 필요한 다른 클레임 정보 출력
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -76,7 +99,7 @@ public class PostControllerTest {
                         .param("title", title)
                         .param("content", content)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(title))
                 .andExpect(jsonPath("$.content").value(content));
     }

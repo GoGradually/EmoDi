@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +24,7 @@ public class Post {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String imagePath;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,14 +34,25 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @PrePersist
+    public void setCreatedAt() {
+        this.createdAt = LocalDateTime.now();
+    }
     @Builder
     public Post(String title, String content, String imagePath, Member member) {
         this.title = title;
         this.content = content;
         this.imagePath = imagePath;
         this.member = member;
-        this.createdAt = LocalDateTime.now();
     }
+    @Builder
+    public Post(String title, String content, Member member) {
+        this.title = title;
+        this.content = content;
+        this.member = member;
+    }
+
+
 
     // 게시글 수정 메서드
     public void update(String title, String content, String imagePath) {
@@ -50,4 +60,5 @@ public class Post {
         this.content = content;
         this.imagePath = imagePath;
     }
+
 }
