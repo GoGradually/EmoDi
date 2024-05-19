@@ -20,15 +20,6 @@ public class PostService {
     private final PostRepository postRepository;
 
     // 게시글 작성
-    public Post createPost(String title, String content, Member member) {
-        Post post = Post.builder()
-                .title(title)
-                .content(content)
-                .member(member)
-                .build();
-        return postRepository.save(post);
-    }
-
     public Post createPost(String title, String content, String imagePath, Member member) {
         Post post = Post.builder()
                 .title(title)
