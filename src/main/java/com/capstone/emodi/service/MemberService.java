@@ -7,16 +7,12 @@ import com.capstone.emodi.exception.DuplicateMemberException;
 import com.capstone.emodi.exception.MemberNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class MemberService implements UserDetailsService {
+public class MemberService {
     private final MemberRepository memberRepository;
 
     // 회원 가입
@@ -58,17 +54,5 @@ public class MemberService implements UserDetailsService {
                 .orElseThrow(() -> new MemberNotFoundException("해당 회원이 없습니다. id=" + memberId));
 
         memberRepository.delete(member);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
-        Member member = memberRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다. loginId=" + loginId));
-
-        return User.builder()
-                .username(member.getLoginId())
-                .password(member.getPassword())
-                .authorities("ROLE_USER") // 적절한 권한을 부여합니다.
-                .build();
     }
 }
