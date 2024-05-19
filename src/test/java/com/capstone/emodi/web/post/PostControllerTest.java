@@ -76,7 +76,7 @@ public class PostControllerTest {
                         .param("title", title)
                         .param("content", content)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value(title))
                 .andExpect(jsonPath("$.content").value(content));
     }
