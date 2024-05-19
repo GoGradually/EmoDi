@@ -49,6 +49,12 @@ public class PostService {
     public List<Post> getPostsByMemberId(Long memberId) {
         return postRepository.findByMemberId(memberId);
     }
+    
+    // 게시글 id 로 게시글 조회
+    public Post getPostById(Long postId){
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("해당 게시글이 없습니다. id=" + postId));
+    }
 
     // 특정 기간 내에 작성된 게시글 목록 조회
     public List<Post> getPostsBetweenDates(LocalDateTime startDate, LocalDateTime endDate) {

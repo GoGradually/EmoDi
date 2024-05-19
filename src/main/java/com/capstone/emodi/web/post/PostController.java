@@ -35,46 +35,90 @@ public class PostController {
     public ResponseEntity<Post> createPost(@RequestHeader("Authorization") String token,
                                            @RequestParam("title") String title,
                                            @RequestParam("content") String content,
-                                           @RequestParam("image") MultipartFile image) {
+                                           @RequestParam(value = "image", required = false) MultipartFile image) {
         String loginId = jwtTokenProvider.getLoginIdFromToken(token.substring(7)); // "Bearer " 제거
         Optional<Member> member = memberService.findByLoginId(loginId);
         if (member.isEmpty()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
-
-        String imagePath = null;
-        try {
-            imagePath = saveImage(image);
-        } catch (IOException e) {
-            throw new FileUploadException("이미지 파일 업로드 중 오류가 발생했습니다.");
+        if (!jwtTokenProvider.validateAccessToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Post post = postService.createPost(title, content, imagePath, member.get());
-        return ResponseEntity.status(HttpStatus.CREATED).body(post);
+        // 입력 데이터 유효성 검사
+        if (title.isEmpty() || content.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        try {
+            String imagePath = null;
+            if (image != null) {
+                try {
+                    imagePath = saveImage(image);
+                } catch (IOException e) {
+                    throw new FileUploadException("이미지 파일 업로드 중 오류가 발생했습니다.");
+                }
+            }
+
+            Post post = postService.createPost(title, content, imagePath, member.get());
+            return ResponseEntity.status(HttpStatus.CREATED).body(post);
+        } catch (FileUploadException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     // 게시글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long postId,
+    public ResponseEntity<Post> updatePost(@RequestHeader("Authorization") String accessToken,
+                                           @PathVariable Long postId,
                                            @RequestParam("title") String title,
                                            @RequestParam("content") String content,
                                            @RequestParam(value = "image", required = false) MultipartFile image) {
-        String imagePath = null;
-        if (image != null) {
-            try {
-                imagePath = saveImage(image);
-            } catch (IOException e) {
-                throw new FileUploadException("이미지 파일 업로드 중 오류가 발생했습니다.");
-            }
+        ResponseEntity<Post> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
+        if (UNAUTHORIZED != null) return UNAUTHORIZED;
+
+        // 입력 데이터 유효성 검사
+        if (title.isEmpty() || content.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        Post post = postService.updatePost(postId, title, content, imagePath);
-        return ResponseEntity.ok(post);
+        try {
+            String imagePath = null;
+            if (image != null) {
+                try {
+                    imagePath = saveImage(image);
+                } catch (IOException e) {
+                    throw new FileUploadException("이미지 파일 업로드 중 오류가 발생했습니다.");
+                }
+            }
+
+            Post post = postService.updatePost(postId, title, content, imagePath);
+            return ResponseEntity.ok(post);
+        } catch (FileUploadException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    private ResponseEntity<Post> getPostResponseEntity(String accessToken, Long postId) {
+        if (!jwtTokenProvider.validateAccessToken(accessToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        // 권한 체크
+        String loginId = jwtTokenProvider.getLoginIdFromToken(accessToken);
+        Post post = postService.getPostById(postId);
+        if (!post.getMember().getLoginId().equals(loginId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        return null;
     }
 
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
+    public ResponseEntity<Post> deletePost(@RequestHeader("Authorization") String accessToken,
+                                           @PathVariable Long postId) {
+        // Access 토큰 유효성 검사
+        ResponseEntity<Post> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
+        if (UNAUTHORIZED != null) return UNAUTHORIZED;
+
         postService.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
