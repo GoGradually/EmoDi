@@ -28,7 +28,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -66,25 +65,14 @@ public class PostControllerTest {
                 .build();
         memberRepository.save(member);
 
-        accessToken = jwtTokenProvider.generateAccessToken(member.getLoginId());
+        accessToken = generateAccessToken(member);
+    }
+
+    private String generateAccessToken(Member member) {
+        String token = jwtTokenProvider.generateAccessToken(member.getLoginId());
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(member.getLoginId(), null, Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        System.out.println("Generated Access Token: " + accessToken);
-
-        // 토큰 디코딩하여 내용 확인
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(JWT_SECRET)
-                    .parseClaimsJws(accessToken)
-                    .getBody();
-
-            System.out.println("Token Claims:");
-            System.out.println("Subject: " + claims.getSubject());
-            System.out.println("Expiration: " + claims.getExpiration());
-            // 필요한 다른 클레임 정보 출력
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        return token;
     }
 
     @Test
@@ -96,8 +84,7 @@ public class PostControllerTest {
         // when, then
         mockMvc.perform(post("/api/posts")
                         .header("Authorization", "Bearer " + accessToken)
-                        .param("title", title)
-                        .param("content", content)
+                        .content("{\"title\":\"" + title + "\", \"content\":\"" + content + "\"}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(title))
@@ -120,13 +107,13 @@ public class PostControllerTest {
         // when, then
         mockMvc.perform(put("/api/posts/{postId}", post.getId())
                         .header("Authorization", "Bearer " + accessToken)
-                        .param("title", updatedTitle)
-                        .param("content", updatedContent)
+                        .content("{\"title\":\"" + updatedTitle + "\", \"content\":\"" + updatedContent + "\"}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(updatedTitle))
                 .andExpect(jsonPath("$.content").value(updatedContent));
     }
+
     @Test
     void deletePost_success() throws Exception {
         // given
@@ -187,56 +174,48 @@ public class PostControllerTest {
     @Test
     void getPostsByDate_success() throws Exception {
         // given
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime fixedDate = LocalDateTime.of(2023, 5, 19, 0, 0);
         Post post1 = Post.builder()
                 .title("게시글 1")
                 .content("내용 1")
                 .member(member)
+                .createdAt(fixedDate)
                 .build();
-        Post post2 = Post.builder()
-                .title("게시글 2")
-                .content("내용 2")
-                .member(member)
-                .build();
-        postRepository.saveAll(List.of(post1, post2));
+        postRepository.save(post1);
 
-        String today = now.toLocalDate().toString();
+        String fixedDateString = fixedDate.toLocalDate().toString();
 
         // when, then
         mockMvc.perform(get("/api/posts/date")
-                        .param("date", today)
+                        .param("date", fixedDateString)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].title").value(post2.getTitle()))
-                .andExpect(jsonPath("$[0].content").value(post2.getContent()));
+                .andExpect(jsonPath("$[0].title").value(post1.getTitle()))
+                .andExpect(jsonPath("$[0].content").value(post1.getContent()));
     }
 
     @Test
     void getPostsByMemberIdAndDate_success() throws Exception {
         // given
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime fixedDate = LocalDateTime.of(2023, 5, 19, 0, 0);
         Post post1 = Post.builder()
                 .title("게시글 1")
                 .content("내용 1")
                 .member(member)
+                .createdAt(fixedDate)
                 .build();
-        Post post2 = Post.builder()
-                .title("게시글 2")
-                .content("내용 2")
-                .member(member)
-                .build();
-        postRepository.saveAll(List.of(post1, post2));
+        postRepository.save(post1);
 
-        String today = now.toLocalDate().toString();
+        String fixedDateString = fixedDate.toLocalDate().toString();
 
         // when, then
         mockMvc.perform(get("/api/posts/member/{memberId}/date", member.getId())
-                        .param("date", today)
+                        .param("date", fixedDateString)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].title").value(post2.getTitle()))
-                .andExpect(jsonPath("$[0].content").value(post2.getContent()));
+                .andExpect(jsonPath("$[0].title").value(post1.getTitle()))
+                .andExpect(jsonPath("$[0].content").value(post1.getContent()));
     }
 }

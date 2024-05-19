@@ -5,7 +5,11 @@ import com.capstone.emodi.domain.member.MemberRepository;
 import com.capstone.emodi.exception.LoginFailedException;
 import com.capstone.emodi.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -22,9 +26,12 @@ public class LoginService {
         Member member = memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new LoginFailedException("가입되지 않은 아이디이거나 잘못된 비밀번호입니다."));
 
+
+
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new LoginFailedException("가입되지 않은 아이디이거나 잘못된 비밀번호입니다.");
         }
+
 
         String accessToken = jwtTokenProvider.generateAccessToken(loginId);
         String refreshToken = jwtTokenProvider.generateRefreshToken(loginId);

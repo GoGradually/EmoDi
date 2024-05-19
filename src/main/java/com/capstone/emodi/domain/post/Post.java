@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Profile;
 
 import java.time.LocalDateTime;
 
@@ -36,7 +37,22 @@ public class Post {
 
     @PrePersist
     public void setCreatedAt() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = this.createdAt == null ? LocalDateTime.now() : this.createdAt;
+    }
+    @Builder
+    public Post(String title, String content, String imagePath, LocalDateTime createdAt, Member member) {
+        this.title = title;
+        this.content = content;
+        this.imagePath = imagePath;
+        this.createdAt = createdAt;
+        this.member = member;
+    }
+    @Builder
+    public Post(String title, String content, LocalDateTime createdAt, Member member) {
+        this.title = title;
+        this.content = content;
+        this.member = member;
+        this.createdAt = createdAt;
     }
     @Builder
     public Post(String title, String content, String imagePath, Member member) {
