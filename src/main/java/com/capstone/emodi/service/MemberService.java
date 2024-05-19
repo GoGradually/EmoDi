@@ -38,7 +38,7 @@ public class MemberService {
     }
 
     // 회원 정보 수정
-    public Member updateMember(Long memberId, String password, String username, String email, String tellNumber) {
+    public Member updateMember(Long memberId, String password) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("해당 회원이 없습니다. id=" + memberId));
 
