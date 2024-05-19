@@ -2,6 +2,7 @@ package com.capstone.emodi.web.signup;
 
 import com.capstone.emodi.service.SignUpService;
 import com.capstone.emodi.security.JwtTokenProvider;
+import com.capstone.emodi.web.response.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -26,12 +27,13 @@ public class SignUpController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponse> signup(@RequestBody @Valid SignupRequest signupRequest) {
+    public ResponseEntity<ApiResponse<SignupResponse>> signup(@RequestBody @Valid SignupRequest signupRequest) {
         try {
             Map<String, String> tokens = signUpService.signUp(signupRequest);
-            return ResponseEntity.ok(new SignupResponse("회원가입이 완료되었습니다.", tokens.get("accessToken"), tokens.get("refreshToken")));
+            SignupResponse signupResponse = new SignupResponse("회원가입이 완료되었습니다.", tokens.get("accessToken"), tokens.get("refreshToken"));
+            return ResponseEntity.ok(ApiResponse.success("회원가입 성공", signupResponse));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new SignupResponse(e.getMessage(), null, null));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(e.getMessage()));
         }
     }
 

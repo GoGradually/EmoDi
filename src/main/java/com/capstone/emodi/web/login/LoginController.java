@@ -1,6 +1,7 @@
 package com.capstone.emodi.web.login;
 
 import com.capstone.emodi.service.LoginService;
+import com.capstone.emodi.web.response.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -19,15 +20,15 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody @Valid LoginRequest loginRequest) {
         try {
             Map<String, String> tokens = loginService.login(loginRequest.getLoginId(), loginRequest.getPassword());
-            return ResponseEntity.ok(new LoginResponse("로그인 성공", tokens.get("accessToken"), tokens.get("refreshToken")));
+            LoginResponse loginResponse = new LoginResponse("로그인 성공", tokens.get("accessToken"), tokens.get("refreshToken"));
+            return ResponseEntity.ok(ApiResponse.success("로그인 성공", loginResponse));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse(e.getMessage(), null, null));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(e.getMessage()));
         }
     }
-
     @Getter
     @Setter
     private static class LoginRequest {
