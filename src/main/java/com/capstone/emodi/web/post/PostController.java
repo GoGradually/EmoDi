@@ -33,11 +33,12 @@ public class PostController {
     // 게시글 작성
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestHeader("Authorization") String token,
-                                           @RequestBody String title,
-                                           @RequestBody String content,
-                                           @RequestBody(required = false) MultipartFile image) {
-        String loginId = jwtTokenProvider.getLoginIdFromToken(token.substring(7)); // "Bearer " 제거
+                                           @RequestBody PostString postString,
+                                           @RequestParam(required = false) MultipartFile image) {
+        String loginId = jwtTokenProvider.getLoginIdFromToken(token);
         Optional<Member> member = memberService.findByLoginId(loginId);
+        String title = postString.title;
+        String content = postString.content;
         if (member.isEmpty()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
@@ -70,11 +71,13 @@ public class PostController {
     @PutMapping("/{postId}")
     public ResponseEntity<Post> updatePost(@RequestHeader("Authorization") String accessToken,
                                            @PathVariable Long postId,
-                                           @RequestBody String title,
-                                           @RequestBody String content,
-                                           @RequestBody (required = false) MultipartFile image) {
+                                           @RequestBody PostString postString,
+                                           @RequestParam (required = false) MultipartFile image) {
         ResponseEntity<Post> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
+
+        String title = postString.title;
+        String content = postString.content;
 
         // 입력 데이터 유효성 검사
         if (title.isEmpty() || content.isEmpty()) {
@@ -165,5 +168,10 @@ public class PostController {
 
         // 저장된 이미지 파일 경로 반환
         return uploadDir + uniqueFilename;
+    }
+
+    public static class PostString{
+        public String title;
+        public String content;
     }
 }
