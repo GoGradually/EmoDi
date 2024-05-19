@@ -33,9 +33,9 @@ public class PostController {
     // 게시글 작성
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestHeader("Authorization") String token,
-                                           @RequestParam("title") String title,
-                                           @RequestParam("content") String content,
-                                           @RequestParam(value = "image", required = false) MultipartFile image) {
+                                           @RequestBody String title,
+                                           @RequestBody String content,
+                                           @RequestBody(required = false) MultipartFile image) {
         String loginId = jwtTokenProvider.getLoginIdFromToken(token.substring(7)); // "Bearer " 제거
         Optional<Member> member = memberService.findByLoginId(loginId);
         if (member.isEmpty()) {
@@ -70,9 +70,9 @@ public class PostController {
     @PutMapping("/{postId}")
     public ResponseEntity<Post> updatePost(@RequestHeader("Authorization") String accessToken,
                                            @PathVariable Long postId,
-                                           @RequestParam("title") String title,
-                                           @RequestParam("content") String content,
-                                           @RequestParam(value = "image", required = false) MultipartFile image) {
+                                           @RequestBody String title,
+                                           @RequestBody String content,
+                                           @RequestBody (required = false) MultipartFile image) {
         ResponseEntity<Post> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
 

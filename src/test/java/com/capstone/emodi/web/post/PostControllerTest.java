@@ -51,9 +51,6 @@ public class PostControllerTest {
     private Member member;
     private String accessToken;
 
-    @Value("${jwt.secret}")
-    private String JWT_SECRET;
-
     @BeforeEach
     void setUp() {
         member = Member.builder()
