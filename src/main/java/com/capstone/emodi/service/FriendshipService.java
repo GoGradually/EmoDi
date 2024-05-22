@@ -21,11 +21,11 @@ public class FriendshipService {
     }
 
     public void addFriend(Long memberId, Long friendId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
+        Member friend = memberRepository.findById(friendId).orElseThrow(() -> new IllegalArgumentException("Invalid friend ID"));
         if (friendshipRepository.existsByMemberIdAndFriendId(memberId, friendId)) {
             throw new IllegalStateException("Already friends");
         }
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
-        Member friend = memberRepository.findById(friendId).orElseThrow(() -> new IllegalArgumentException("Invalid friend ID"));
         Friendship friendship = new Friendship(member, friend);
         friendshipRepository.save(friendship);
     }

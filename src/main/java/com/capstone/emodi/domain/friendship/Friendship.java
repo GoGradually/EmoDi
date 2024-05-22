@@ -2,10 +2,12 @@ package com.capstone.emodi.domain.friendship;
 
 import com.capstone.emodi.domain.member.Member;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
 public class Friendship {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
