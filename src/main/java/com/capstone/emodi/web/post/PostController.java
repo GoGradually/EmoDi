@@ -6,6 +6,7 @@ import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.exception.FileUploadException;
 import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.security.JwtTokenProvider;
+import com.capstone.emodi.service.LikeService;
 import com.capstone.emodi.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class PostController {
     private final PostService postService;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberService;
+    private final LikeService likeService;
 
     // 게시글 작성
     @PostMapping
@@ -155,6 +157,7 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
+
     // 이미지 저장 메서드
     private String saveImage(MultipartFile image) throws IOException {
         // 이미지 파일 이름 생성
@@ -181,6 +184,26 @@ public class PostController {
         public String title;
         public String content;
     }
+
+
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<Void> likePost(@PathVariable Long postId, @RequestParam Long memberId) {
+        likeService.likePost(postId, memberId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<Void> unlikePost(@PathVariable Long postId, @RequestParam Long memberId) {
+        likeService.unlikePost(postId, memberId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{postId}/likes")
+    public ResponseEntity<Long> getLikeCount(@PathVariable Long postId) {
+        long likeCount = likeService.getLikeCount(postId);
+        return ResponseEntity.ok(likeCount);
+    }
+
     // PostNotFoundException 처리를 위한 ExceptionHandler 추가
     @ExceptionHandler(PostNotFoundException.class)
     public ResponseEntity<String> handlePostNotFoundException(PostNotFoundException ex) {

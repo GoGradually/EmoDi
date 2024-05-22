@@ -1,5 +1,6 @@
 package com.capstone.emodi.domain.post;
 
+import com.capstone.emodi.domain.like.Like;
 import com.capstone.emodi.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Profile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "posts")
@@ -34,6 +37,13 @@ public class Post {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Like> likes = new ArrayList<>();
+
+    public int getLikeCount() {
+        return likes.size();
+    }
 
     @PrePersist
     public void setCreatedAt() {
