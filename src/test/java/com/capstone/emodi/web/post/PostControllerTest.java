@@ -8,6 +8,7 @@ import com.capstone.emodi.security.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,9 +29,11 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Slf4j
 public class PostControllerTest {
 
     @Autowired
@@ -77,7 +80,6 @@ public class PostControllerTest {
         // given
         String title = "테스트 제목";
         String content = "테스트 내용";
-
         // when, then
         mockMvc.perform(post("/api/posts")
                         .header("Authorization", "Bearer " + accessToken)

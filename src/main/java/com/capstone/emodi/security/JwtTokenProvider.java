@@ -58,7 +58,6 @@ public class JwtTokenProvider {
 
     public boolean validateAccessToken(String token) {
         try {
-            token = token.substring(7);
             Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
             return true;
         } catch (Exception ex) {

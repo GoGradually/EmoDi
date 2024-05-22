@@ -4,9 +4,11 @@ import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.domain.member.MemberRepository;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.exception.FileUploadException;
+import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.capstone.emodi.service.PostService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
@@ -35,7 +38,11 @@ public class PostController {
     public ResponseEntity<Post> createPost(@RequestHeader("Authorization") String token,
                                            @RequestBody PostString postString,
                                            @RequestParam(required = false) MultipartFile image) {
+        log.warn("createPost token = {}", token);
+        token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
+        log.warn("loginId = {}", loginId);
+
         Optional<Member> member = memberService.findByLoginId(loginId);
         String title = postString.title;
         String content = postString.content;
@@ -73,6 +80,8 @@ public class PostController {
                                            @PathVariable Long postId,
                                            @RequestBody PostString postString,
                                            @RequestParam (required = false) MultipartFile image) {
+
+        accessToken = accessToken.substring(7);
         ResponseEntity<Post> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
 
@@ -118,6 +127,7 @@ public class PostController {
     @DeleteMapping("/{postId}")
     public ResponseEntity<Post> deletePost(@RequestHeader("Authorization") String accessToken,
                                            @PathVariable Long postId) {
+        accessToken = accessToken.substring(7);
         // Access 토큰 유효성 검사
         ResponseEntity<Post> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
@@ -173,5 +183,10 @@ public class PostController {
     public static class PostString{
         public String title;
         public String content;
+    }
+    // PostNotFoundException 처리를 위한 ExceptionHandler 추가
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<String> handlePostNotFoundException(PostNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }
