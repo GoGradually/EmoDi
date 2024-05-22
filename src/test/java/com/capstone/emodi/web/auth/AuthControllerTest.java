@@ -60,6 +60,7 @@ public class AuthControllerTest {
         verify(jwtTokenProvider, times(1)).removeRefreshToken(refreshToken);
     }
 
+    // Todo
     @Test
     @WithMockUser
     public void testLogout_InvalidRefreshToken() throws Exception {
@@ -68,8 +69,6 @@ public class AuthControllerTest {
 
         AuthController.LogoutRequest logoutRequest = new AuthController.LogoutRequest();
         logoutRequest.setRefreshToken(refreshToken);
-
-        given(jwtTokenProvider.validateRefreshToken(refreshToken)).willReturn(false);
 
         // when
         mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/logout")
