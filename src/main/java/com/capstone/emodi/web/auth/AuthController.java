@@ -47,7 +47,7 @@ public class AuthController {
 
     @Getter
     @Setter
-    private static class LogoutRequest {
+    static class LogoutRequest {
         private String refreshToken;
     }
 
