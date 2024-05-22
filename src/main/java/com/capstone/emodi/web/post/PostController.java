@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
@@ -38,10 +37,8 @@ public class PostController {
     public ResponseEntity<Post> createPost(@RequestHeader("Authorization") String token,
                                            @RequestBody PostString postString,
                                            @RequestParam(required = false) MultipartFile image) {
-        log.warn("createPost token = {}", token);
         token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
-        log.warn("loginId = {}", loginId);
 
         Optional<Member> member = memberService.findByLoginId(loginId);
         String title = postString.title;
