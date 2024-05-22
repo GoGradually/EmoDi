@@ -31,7 +31,7 @@ public class LoginController {
     }
     @Getter
     @Setter
-    private static class LoginRequest {
+    static class LoginRequest {
         @NotBlank
         private String loginId;
         @NotBlank
