@@ -1,80 +1,70 @@
 package com.capstone.emodi.web.auth;
 
+import com.capstone.emodi.domain.session.LogoutTokenRepository;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import java.time.LocalDateTime;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@RequiredArgsConstructor
 @Transactional
 public class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
+    private LogoutTokenRepository logoutTokenRepository;
+
+    @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    private ObjectMapper objectMapper;
-
+    private String accessToken;
+    private String refreshToken;
     @BeforeEach
     public void setup() {
-        objectMapper = new ObjectMapper();
+        String loginId = "testUser";
+        accessToken = jwtTokenProvider.generateAccessToken(loginId);
+        refreshToken = jwtTokenProvider.generateRefreshToken(loginId);
     }
 
+
     @Test
-    @WithMockUser
-    public void testLogout_Success() throws Exception {
-        // given
-        String refreshToken = "valid_refresh_token";
-
-        AuthController.LogoutRequest logoutRequest = new AuthController.LogoutRequest();
-        logoutRequest.setRefreshToken(refreshToken);
-
-        given(jwtTokenProvider.validateRefreshToken(refreshToken)).willReturn(true);
-        given(jwtTokenProvider.isRefreshTokenValid(refreshToken)).willReturn(true);
-
-        // when
+    public void logoutTest() throws Exception {
+        // 로그아웃 요청 보내기
         mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/logout")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(logoutRequest)))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                        .content("{\"refreshToken\":\"" + refreshToken + "\"}"))
+                .andExpect(status().isOk())
+                .andDo(print());
 
-        // then
-        verify(jwtTokenProvider, times(1)).removeRefreshToken(refreshToken);
-    }
-
-    // Todo
-    @Test
-    @WithMockUser
-    public void testLogout_InvalidRefreshToken() throws Exception {
-        // given
-        String refreshToken = "invalid_refresh_token";
-
-        AuthController.LogoutRequest logoutRequest = new AuthController.LogoutRequest();
-        logoutRequest.setRefreshToken(refreshToken);
-
-        // when
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/logout")
+        // 로그아웃된 토큰으로 재발급 시도
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/refresh")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(logoutRequest)))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().string("Invalid refresh token"));
+                        .content("{\"refreshToken\":\"" + refreshToken + "\"}"))
+                .andExpect(status().isUnauthorized())
+                .andDo(print());
+
+        // 리프레시 토큰이 블랙리스트에 추가되었는지 확인
+        boolean isLoggedOut = logoutTokenRepository.isLoggedOut(refreshToken);
+        assert isLoggedOut;
     }
 }

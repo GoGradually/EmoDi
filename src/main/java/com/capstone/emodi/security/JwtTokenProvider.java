@@ -1,5 +1,6 @@
 package com.capstone.emodi.security;
 
+import com.capstone.emodi.domain.session.LogoutTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -68,6 +69,9 @@ public class JwtTokenProvider {
 
     public boolean validateRefreshToken(String token) {
         try {
+            if (logoutTokenRepository.isLoggedOut(token)) {
+                return false;
+            }
             Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
             return true;
         } catch (Exception ex) {
@@ -75,17 +79,20 @@ public class JwtTokenProvider {
             return false;
         }
     }
-    private final Set<String> refreshTokens = new HashSet<>();
+    private final LogoutTokenRepository logoutTokenRepository;
 
-    public void storeRefreshToken(String refreshToken) {
-        refreshTokens.add(refreshToken);
-    }
 
-    public void removeRefreshToken(String refreshToken) {
-        refreshTokens.remove(refreshToken);
+    public void logoutRefreshToken(String refreshToken) {
+        long expirationTime = Jwts.parser()
+                .setSigningKey(JWT_SECRET)
+                .parseClaimsJws(refreshToken)
+                .getBody()
+                .getExpiration()
+                .getTime();
+        logoutTokenRepository.addLogoutToken(refreshToken, expirationTime);
     }
 
     public boolean isRefreshTokenValid(String refreshToken) {
-        return refreshTokens.contains(refreshToken);
+        return logoutTokenRepository.isLoggedOut(refreshToken);
     }
 }

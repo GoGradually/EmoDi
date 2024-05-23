@@ -37,8 +37,8 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestBody LogoutRequest logoutRequest) {
         String refreshToken = logoutRequest.getRefreshToken();
-        if (jwtTokenProvider.validateRefreshToken(refreshToken) && jwtTokenProvider.isRefreshTokenValid(refreshToken)) {
-            jwtTokenProvider.removeRefreshToken(refreshToken);
+        if (jwtTokenProvider.validateRefreshToken(refreshToken)) {
+            jwtTokenProvider.logoutRefreshToken(refreshToken);
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.badRequest().body("Invalid refresh token");

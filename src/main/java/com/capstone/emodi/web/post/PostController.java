@@ -11,6 +11,7 @@ import com.capstone.emodi.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Post> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                            @RequestBody PostString postString,
                                            @RequestParam(required = false) MultipartFile image) {
         token = token.substring(7);
@@ -75,7 +76,7 @@ public class PostController {
 
     // 게시글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<Post> updatePost(@RequestHeader("Authorization") String accessToken,
+    public ResponseEntity<Post> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
                                            @PathVariable Long postId,
                                            @RequestBody PostString postString,
                                            @RequestParam (required = false) MultipartFile image) {
@@ -124,7 +125,7 @@ public class PostController {
 
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Post> deletePost(@RequestHeader("Authorization") String accessToken,
+    public ResponseEntity<Post> deletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
                                            @PathVariable Long postId) {
         accessToken = accessToken.substring(7);
         // Access 토큰 유효성 검사

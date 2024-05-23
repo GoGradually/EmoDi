@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -82,7 +83,7 @@ public class PostControllerTest {
         String content = "테스트 내용";
         // when, then
         mockMvc.perform(post("/api/posts")
-                        .header("Authorization", "Bearer " + accessToken)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                         .content("{\"title\":\"" + title + "\", \"content\":\"" + content + "\"}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -105,7 +106,7 @@ public class PostControllerTest {
 
         // when, then
         mockMvc.perform(put("/api/posts/{postId}", post.getId())
-                        .header("Authorization", "Bearer " + accessToken)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                         .content("{\"title\":\"" + updatedTitle + "\", \"content\":\"" + updatedContent + "\"}")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -125,7 +126,7 @@ public class PostControllerTest {
 
         // when, then
         mockMvc.perform(delete("/api/posts/{postId}", post.getId())
-                        .header("Authorization", "Bearer " + accessToken)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
@@ -139,7 +140,7 @@ public class PostControllerTest {
 
         // when, then
         mockMvc.perform(delete("/api/posts/{postId}", nonExistentPostId)
-                        .header("Authorization", "Bearer " + accessToken)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
