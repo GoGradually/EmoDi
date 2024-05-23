@@ -1,5 +1,6 @@
 package com.capstone.emodi.web.feed;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -24,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
@@ -58,7 +61,6 @@ public class FeedIntegrationTest {
     private Member friend1;
     private Member friend2;
     private Member nonFriend;
-    private Post post;
 
     @BeforeEach
     public void setup() {
@@ -83,41 +85,68 @@ public class FeedIntegrationTest {
     @Test
     @WithMockUser
     public void testGetFriendFeed() throws Exception {
-        post = Post.builder()
+        //given
+        Post post1 = Post.builder()
                 .title("title1")
                 .content("content1")
                 .member(friend1)
-                .createdAt(LocalDateTime.now().minusDays(5)).build();
-        postRepository.save(post);
-
-        mockMvc.perform(get("/feed").param("memberId", String.valueOf(member.getId())))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(post.getId()))
-                .andExpect(jsonPath("$[1]").doesNotExist()); // Only 1 posts should be included
-    }
-    @Test
-    public void testGetFriendsLikeFeed(){
-        //given
-        post = Post.builder()
-                .title("title1")
-                .content("content1")
+                .createdAt(LocalDateTime.now().minusDays(2)).build();
+        Post post2 = Post.builder()
+                .title("title2")
+                .content("content2")
                 .member(nonFriend)
-                .createdAt(LocalDateTime.now().minusDays(5)).build();
-        postRepository.save(post);
+                .createdAt(LocalDateTime.now().minusDays(1)).build();
+        postRepository.save(post1);
+        postRepository.save(post2);
+        likeService.likePost(post2.getId(), friend2.getId());
 
-        likeService.likePost(post.getId(), friend1.getId());
+        //when & then
+        mockMvc.perform(get("/feed")
+                        .param("memberId", String.valueOf(member.getId()))
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[*].id").value(containsInAnyOrder(
+                        post1.getId().intValue(),
+                        post2.getId().intValue()
+                )));
+    }
 
-        //when
-        List<Post> feed = feedService.getFriendFeed(member.getId());
+    @Test
+    @WithMockUser
+    public void testGetFriendFeedPaging() throws Exception {
+        //given
+        for (int i = 1; i <= 15; i++) {
+            Post post = Post.builder()
+                    .title("title" + i)
+                    .content("content" + i)
+                    .member(friend1)
+                    .createdAt(LocalDateTime.now().minusDays(i)).build();
+            postRepository.save(post);
+        }
 
-        //then
-        assertEquals(1, feed.size());
-        assertTrue(feed.contains(post));
+        //when & then
+        mockMvc.perform(get("/feed")
+                        .param("memberId", String.valueOf(member.getId()))
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(10))
+                .andExpect(jsonPath("$.totalElements").value(15));
+
+        mockMvc.perform(get("/feed")
+                        .param("memberId", String.valueOf(member.getId()))
+                        .param("page", "1")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(5))
+                .andExpect(jsonPath("$.totalElements").value(15));
     }
     @Test
     public void testGetFriendsLikeFriendFeed(){
         //given
-        post = Post.builder()
+        Post post = Post.builder()
                 .title("title1")
                 .content("content1")
                 .member(friend2)
@@ -127,11 +156,11 @@ public class FeedIntegrationTest {
         likeService.likePost(post.getId(), friend1.getId());
 
         //when
-        List<Post> feed = feedService.getFriendFeed(member.getId());
+        Page<Post> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
 
         //then
-        assertEquals(1, feed.size());
-        assertTrue(feed.contains(post));
+        assertEquals(1, feed.getContent().size());
+        assertTrue(feed.getContent().contains(post));
     }
 
 }

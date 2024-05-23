@@ -1,5 +1,7 @@
 package com.capstone.emodi.domain.post;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,10 +19,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByCreatedAtBefore(LocalDateTime date);
     List<Post> findByMemberIdAndCreatedAtBetween(Long memberId, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
-    @Query("SELECT p FROM Post p WHERE p.member.id IN (SELECT f.friend.id FROM Friendship f WHERE f.member.id = :memberId) AND p.createdAt >= :since")
-    List<Post> findRecentPostsByFriends(@Param("memberId") Long memberId, @Param("since") LocalDateTime since);
+    @Query("SELECT p FROM Post p WHERE p.member.id IN (SELECT f.friend.id FROM Friendship f WHERE f.member.id = :memberId)")
+    Page<Post> findRecentPostsByFriendsWithPaging(@Param("memberId") Long memberId, Pageable pageable);
 
-    @Query("SELECT p FROM Post p JOIN p.likes l WHERE l.member.id IN (SELECT f.friend.id FROM Friendship f WHERE f.member.id = :memberId) AND p.createdAt >= :since")
-    List<Post> findRecentPostsLikedByFriends(@Param("memberId") Long memberId, @Param("since") LocalDateTime since);
+    @Query("SELECT p FROM Post p JOIN p.likes l WHERE l.member.id IN (SELECT f.friend.id FROM Friendship f WHERE f.member.id = :memberId)")
+    Page<Post> findRecentPostsLikedByFriendsWithPaging(@Param("memberId") Long memberId, Pageable pageable);
 
 }

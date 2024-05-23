@@ -1,6 +1,10 @@
 package com.capstone.emodi.web.feed;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.service.FeedService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,9 +21,13 @@ public class FeedController {
     }
 
     @GetMapping("/feed")
-    public ResponseEntity<List<Post>> getFriendFeed(@RequestParam Long memberId) {
-        List<Post> feed = feedService.getFriendFeed(memberId);
+    public ResponseEntity<Page<Post>> getFriendFeed(
+            @RequestParam Long memberId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Post> feed = feedService.getFriendFeed(memberId, pageable);
         return ResponseEntity.ok(feed);
     }
 }
-

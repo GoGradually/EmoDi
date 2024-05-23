@@ -17,6 +17,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +37,7 @@ public class FeedServiceTest {
     private FriendshipRepository friendshipRepository;
 
     @Autowired
-    private LikeRepository likeRepository;
+    private LikeService likeService;
 
     @Autowired
     private FeedService feedService;
@@ -44,7 +46,6 @@ public class FeedServiceTest {
     private Member friend1;
     private Member friend2;
     private Member nonFriend;
-    private Post post;
 
     @BeforeEach
     public void setup() {
@@ -69,44 +70,55 @@ public class FeedServiceTest {
     @Test
     public void testGetFriendFeed() {
         //given
-        post = Post.builder()
+        Post post1 = Post.builder()
                 .title("title1")
                 .content("content1")
                 .member(friend1)
                 .createdAt(LocalDateTime.now().minusDays(2)).build();
-        postRepository.save(post);
+        Post post2 = Post.builder()
+                .title("title2")
+                .content("content2")
+                .member(nonFriend)
+                .createdAt(LocalDateTime.now().minusDays(1)).build();
+        postRepository.save(post1);
+        postRepository.save(post2);
+        likeService.likePost(post2.getId(), friend2.getId());
 
         //when
-        List<Post> feed = feedService.getFriendFeed(member.getId());
+        Page<Post> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
 
         //then
-        assertEquals(1, feed.size());
-        assertTrue(feed.contains(post));
+        assertEquals(2, feed.getContent().size());
+        assertTrue(feed.getContent().contains(post1));
+        assertTrue(feed.getContent().contains(post2));
     }
+
     @Test
-    public void testGetOutOfDateFeed(){
+    public void testGetFriendFeedPaging() {
         //given
-        post = Post.builder()
-                .title("title1")
-                .content("content1")
-                .member(friend1)
-                .createdAt(LocalDateTime.now().minusDays(10))
-                .build();
-        postRepository.save(post);
+        for (int i = 1; i <= 15; i++) {
+            Post post = Post.builder()
+                    .title("title" + i)
+                    .content("content" + i)
+                    .member(friend1)
+                    .createdAt(LocalDateTime.now().minusDays(i)).build();
+            postRepository.save(post);
+        }
 
         //when
-        List<Post> feed = feedService.getFriendFeed(member.getId());
+        Page<Post> feed1 = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
+        Page<Post> feed2 = feedService.getFriendFeed(member.getId(), PageRequest.of(1, 10));
 
         //then
-        assertEquals(0, feed.size());
-        assertFalse(feed.contains(post));
+        assertEquals(10, feed1.getContent().size());
+        assertEquals(5, feed2.getContent().size());
     }
 
 
     @Test
     public void testNonFriendPostsNotIncluded() {
         //given
-        post = Post.builder()
+        Post post = Post.builder()
                 .title("title1")
                 .content("content1")
                 .member(nonFriend)
@@ -115,10 +127,10 @@ public class FeedServiceTest {
         postRepository.save(post);
 
         //when
-        List<Post> feed = feedService.getFriendFeed(member.getId());
+        Page<Post> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
 
         //then
-        assertEquals(0, feed.size());
-        assertFalse(feed.contains(post));
+        assertEquals(0, feed.getContent().size());
+        assertFalse(feed.getContent().contains(post));
     }
 }
