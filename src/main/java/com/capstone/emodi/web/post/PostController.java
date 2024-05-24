@@ -8,6 +8,7 @@ import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.capstone.emodi.service.LikeService;
 import com.capstone.emodi.service.PostService;
+import com.capstone.emodi.utils.FileUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -161,24 +162,13 @@ public class PostController {
 
     // 이미지 저장 메서드
     private String saveImage(MultipartFile image) throws IOException {
-        // 이미지 파일 이름 생성
-        String originalFilename = image.getOriginalFilename();
-        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String uniqueFilename = UUID.randomUUID().toString() + extension;
-
-        // 이미지 파일 저장 경로 설정
-        String uploadDir = "uploads/";
-        Path uploadPath = Paths.get(uploadDir);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+        String uploadDir = "uploads";
+        try {
+            return FileUploadUtil.saveImage(image, uploadDir);
+        } catch (IOException e) {
+            // 파일 저장 실패 시 예외 처리
+            throw new RuntimeException("Failed to save image", e);
         }
-
-        // 이미지 파일 저장
-        Path filePath = uploadPath.resolve(uniqueFilename);
-        Files.copy(image.getInputStream(), filePath);
-
-        // 저장된 이미지 파일 경로 반환
-        return uploadDir + uniqueFilename;
     }
 
     public static class PostString{

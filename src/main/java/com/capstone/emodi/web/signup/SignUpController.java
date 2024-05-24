@@ -12,10 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -27,9 +25,10 @@ public class SignUpController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<SignupResponse>> signup(@RequestBody @Valid SignupRequest signupRequest) {
+    public ResponseEntity<ApiResponse<SignupResponse>> signup(@RequestPart("signupRequest") @Valid SignupRequest signupRequest,
+                                                              @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
         try {
-            Map<String, String> tokens = signUpService.signUp(signupRequest);
+            Map<String, String> tokens = signUpService.signUp(signupRequest, profileImage);
             SignupResponse signupResponse = new SignupResponse("회원가입이 완료되었습니다.", tokens.get("accessToken"), tokens.get("refreshToken"));
             return ResponseEntity.ok(ApiResponse.success("회원가입 성공", signupResponse));
         } catch (IllegalArgumentException e) {
@@ -57,6 +56,8 @@ public class SignUpController {
 
         @NotBlank
         private String tellNumber;
+
+        private String profileImage;
     }
 
     @Getter

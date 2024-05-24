@@ -46,6 +46,23 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
 
+    @Column(nullable = true)
+    private String profileImage = "/images/default-profile.jpg";
+
+    @Builder
+    public Member(String loginId, String username, String password, String email, String tellNumber, String profileImage) {
+        this.loginId = loginId;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.tellNumber = tellNumber;
+        this.profileImage = profileImage;
+    }
+
+    // 프로필 이미지 변경 메서드 추가
+    public void changeProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
     @Builder
     public Member(String loginId, String username, String password, String email, String tellNumber) {
         this.loginId = loginId;

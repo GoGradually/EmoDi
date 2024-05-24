@@ -32,14 +32,12 @@ public class SignUpControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private SignUpService signUpService;
 
-    @MockBean
+    @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    @MockBean
-    private MemberRepository memberRepository;
 
     private ObjectMapper objectMapper;
 
