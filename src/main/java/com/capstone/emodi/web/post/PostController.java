@@ -59,16 +59,9 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
         try {
-            String imagePath = null;
-            if (image != null) {
-                try {
-                    imagePath = saveImage(image);
-                } catch (IOException e) {
-                    throw new FileUploadException("이미지 파일 업로드 중 오류가 발생했습니다.");
-                }
-            }
 
-            Post post = postService.createPost(title, content, imagePath, member.get());
+
+            Post post = postService.createPost(title, content, image, member.get());
             return ResponseEntity.status(HttpStatus.CREATED).body(post);
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -95,16 +88,8 @@ public class PostController {
         }
 
         try {
-            String imagePath = null;
-            if (image != null) {
-                try {
-                    imagePath = saveImage(image);
-                } catch (IOException e) {
-                    throw new FileUploadException("이미지 파일 업로드 중 오류가 발생했습니다.");
-                }
-            }
 
-            Post post = postService.updatePost(postId, title, content, imagePath);
+            Post post = postService.updatePost(postId, title, content, image);
             return ResponseEntity.ok(post);
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -160,16 +145,7 @@ public class PostController {
     }
 
 
-    // 이미지 저장 메서드
-    private String saveImage(MultipartFile image) throws IOException {
-        String uploadDir = "uploads";
-        try {
-            return FileUploadUtil.saveImage(image, uploadDir);
-        } catch (IOException e) {
-            // 파일 저장 실패 시 예외 처리
-            throw new RuntimeException("Failed to save image", e);
-        }
-    }
+
 
     public static class PostString{
         public String title;
