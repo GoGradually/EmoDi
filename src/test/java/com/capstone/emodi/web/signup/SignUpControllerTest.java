@@ -32,13 +32,6 @@ public class SignUpControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private SignUpService signUpService;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
-
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -62,26 +55,12 @@ public class SignUpControllerTest {
         signupRequest.setEmail(email);
         signupRequest.setTellNumber(tellNumber);
 
-        String accessToken = "access_token";
-        String refreshToken = "refresh_token";
-
-        given(jwtTokenProvider.generateAccessToken(loginId)).willReturn(accessToken);
-        given(jwtTokenProvider.generateRefreshToken(loginId)).willReturn(refreshToken);
-
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
-
-        given(signUpService.signUp(any(SignUpController.SignupRequest.class))).willReturn(tokens);
-
         // when
         mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signupRequest)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.accessToken").value(accessToken))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data.refreshToken").value(refreshToken));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(true));
     }
 
     @Test
@@ -93,6 +72,18 @@ public class SignUpControllerTest {
         String email = "test@example.com";
         String tellNumber = "1234567890";
 
+        String loginId2 = "testuser";
+        String password2 = "password";
+        String username2 = "Test User";
+        String email2 = "test2@example.com";
+        String tellNumber2 = "1234567890";
+
+        String loginId3 = "testuser3";
+        String password3 = "password";
+        String username3 = "Test User";
+        String email3 = "test@example.com";
+        String tellNumber3 = "1234567890";
+
         SignUpController.SignupRequest signupRequest = new SignUpController.SignupRequest();
         signupRequest.setLoginId(loginId);
         signupRequest.setPassword(password);
@@ -100,14 +91,33 @@ public class SignUpControllerTest {
         signupRequest.setEmail(email);
         signupRequest.setTellNumber(tellNumber);
 
-        given(signUpService.signUp(any(SignUpController.SignupRequest.class))).willThrow(new IllegalArgumentException("이미 존재하는 아이디입니다."));
-
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(signupRequest)));
         // when
+        SignUpController.SignupRequest signupRequest2 = new SignUpController.SignupRequest();
+        signupRequest2.setLoginId(loginId2);
+        signupRequest2.setPassword(password2);
+        signupRequest2.setUsername(username2);
+        signupRequest2.setEmail(email2);
+        signupRequest2.setTellNumber(tellNumber2);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(signupRequest)))
+                        .content(objectMapper.writeValueAsString(signupRequest2)))
                 .andExpect(MockMvcResultMatchers.status().isConflict())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("이미 존재하는 아이디입니다."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false));
+
+
+        SignUpController.SignupRequest signupRequest3 = new SignUpController.SignupRequest();
+        signupRequest3.setLoginId(loginId3);
+        signupRequest3.setPassword(password3);
+        signupRequest3.setUsername(username3);
+        signupRequest3.setEmail(email3);
+        signupRequest3.setTellNumber(tellNumber3);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(signupRequest3)))
+                .andExpect(MockMvcResultMatchers.status().isConflict())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.success").value(false));
     }
 }

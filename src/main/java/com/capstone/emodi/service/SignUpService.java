@@ -31,12 +31,9 @@ public class SignUpService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public Map<String, String> signUp(SignUpController.SignupRequest signupRequest, MultipartFile profileImage) {
+    public Map<String, String> signUp(SignUpController.SignupRequest signupRequest) {
         // 회원 정보 저장
         String profileImageUrl = "/images/default-profile.jpg";
-        if (profileImage != null && !profileImage.isEmpty()) {
-            profileImageUrl = saveProfileImage(profileImage);
-        }
 
         Member member = Member.builder()
                 .loginId(signupRequest.getLoginId())
