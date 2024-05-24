@@ -57,13 +57,5 @@ public class SignUpService {
         return tokens;
     }
 
-    private String saveProfileImage(MultipartFile profileImage) {
-        try {
-            String uploadDir = "profile-images";
-            return FileUploadUtil.saveImage(profileImage, uploadDir);
-        } catch (IOException e) {
-            // 파일 저장 실패 시 예외 처리
-            throw new RuntimeException("Failed to save profile image", e);
-        }
-    }
+
 }

@@ -103,26 +103,26 @@ public class MemberServiceTest {
                 .hasMessageContaining("해당 로그인 ID의 회원이 없습니다");
     }
     @Test
-    void updateMember_success() {
+    void updateMemberPassword_success() {
         // given
         String newPassword = "newPassword";
 
         given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
 
         // when
-        Member updatedMember = memberService.updateMember(member.getId(), newPassword);
+        Member updatedMember = memberService.updateMemberPassword(member.getId(), newPassword);
 
         // then
         assertThat(updatedMember.getPassword()).isEqualTo(newPassword);
     }
 
     @Test
-    void updateMember_failWithNotFoundMember() {
+    void updateMemberPassword_failWithNotFoundMember() {
         // given
         given(memberRepository.findById(member.getId())).willReturn(Optional.empty());
 
         // when, then
-        assertThatThrownBy(() -> memberService.updateMember(member.getId(), "newPassword"))
+        assertThatThrownBy(() -> memberService.updateMemberPassword(member.getId(), "newPassword"))
                 .isInstanceOf(MemberNotFoundException.class)
                 .hasMessageContaining("해당 회원이 없습니다");
     }

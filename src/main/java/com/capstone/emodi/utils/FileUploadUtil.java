@@ -34,4 +34,14 @@ public class FileUploadUtil {
         // 저장된 이미지 파일 경로 반환
         return uploadDir + "/" + uniqueFilename;
     }
+    public static void deleteImage(String imagePath) throws IOException {
+        if (imagePath == null || imagePath.isEmpty()) {
+            return;
+        }
+
+        Path filePath = Paths.get(imagePath);
+        if (Files.exists(filePath)) {
+            Files.delete(filePath);
+        }
+    }
 }
