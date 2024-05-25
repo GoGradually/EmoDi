@@ -1,6 +1,7 @@
 HELP.md
 .gradle
 emodi-server-key-pair.pem
+application.properties
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
