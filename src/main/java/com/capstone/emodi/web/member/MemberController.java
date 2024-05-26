@@ -59,8 +59,12 @@ public class MemberController {
         // Getter 메서드 생략
     }
 
-    private static class PasswordUpdateRequest {
+    static class PasswordUpdateRequest {
         private String password;
+
+        public PasswordUpdateRequest(String newPassword) {
+            this.password = newPassword;
+        }
 
         public String getPassword() {
             return password;
