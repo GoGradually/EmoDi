@@ -4,9 +4,11 @@ import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.domain.member.MemberRepository;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.exception.FileUploadException;
+import com.capstone.emodi.exception.MemberNotFoundException;
 import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.capstone.emodi.service.LikeService;
+import com.capstone.emodi.service.MemberService;
 import com.capstone.emodi.service.PostService;
 import com.capstone.emodi.utils.FileUploadUtil;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +35,7 @@ import java.util.UUID;
 public class PostController {
     private final PostService postService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberService;
+    private final MemberService memberService;
     private final LikeService likeService;
 
     // 게시글 작성
@@ -44,10 +46,12 @@ public class PostController {
         token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
 
-        Optional<Member> member = memberService.findByLoginId(loginId);
         String title = postString.title;
         String content = postString.content;
-        if (member.isEmpty()) {
+        Member member;
+        try{
+            member = memberService.findByLoginId(loginId);
+        }catch (MemberNotFoundException e){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
         if (!jwtTokenProvider.validateAccessToken(token)) {
@@ -61,7 +65,7 @@ public class PostController {
         try {
 
 
-            Post post = postService.createPost(title, content, image, member.get());
+            Post post = postService.createPost(title, content, image, member);
             return ResponseEntity.status(HttpStatus.CREATED).body(post);
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
