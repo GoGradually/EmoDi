@@ -25,18 +25,17 @@ public class FeedService {
     }
 
     public Page<Post> getFriendFeed(Long memberId, Pageable pageable) {
-        Page<Post> postsByFriends = postRepository.findRecentPostsByFriendsWithPaging(memberId, pageable);
-        Page<Post> postsLikedByFriends = postRepository.findRecentPostsLikedByFriendsWithPaging(memberId, pageable);
+        try {
+            List<Post> mergedPosts = postRepository.findRecentPostsAndLikedPostsByFriendsWithPaging(memberId, pageable)
+                    .stream()
+                    .distinct()
+                    .collect(Collectors.toList());
 
-        List<Post> mergedPosts = new ArrayList<>();
-        mergedPosts.addAll(postsByFriends.getContent());
-        mergedPosts.addAll(postsLikedByFriends.getContent());
-
-        mergedPosts = mergedPosts.stream()
-                .distinct()
-                .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(mergedPosts, pageable, postsByFriends.getTotalElements() + postsLikedByFriends.getTotalElements());
+            return new PageImpl<>(mergedPosts, pageable, mergedPosts.size());
+        } catch (Exception e) {
+            // 예외 처리 로직 추가
+            // 예외 로깅, 사용자에게 적절한 메시지 반환 등
+            throw new RuntimeException("Failed to retrieve friend feed", e);
+        }
     }
 }

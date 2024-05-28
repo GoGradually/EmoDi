@@ -24,5 +24,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT p FROM Post p JOIN p.likes l WHERE l.member.id IN (SELECT f.friend.id FROM Friendship f WHERE f.member.id = :memberId)")
     Page<Post> findRecentPostsLikedByFriendsWithPaging(@Param("memberId") Long memberId, Pageable pageable);
+    @Query("SELECT DISTINCT p FROM Post p " +
+            "WHERE p.member.id IN (SELECT f.friend.id FROM Friendship f WHERE f.member.id = :memberId) " +
+            "OR p.id IN (SELECT l.post.id FROM Like l WHERE l.member.id IN (SELECT f.friend.id FROM Friendship f WHERE f.member.id = :memberId)) " +
+            "ORDER BY p.createdAt DESC")
+    Page<Post> findRecentPostsAndLikedPostsByFriendsWithPaging(@Param("memberId") Long memberId, Pageable pageable);
 
 }
