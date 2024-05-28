@@ -1,10 +1,12 @@
 package com.capstone.emodi.web.member;
 
 import com.capstone.emodi.domain.member.Member;
+import com.capstone.emodi.exception.MemberNotFoundException;
 import com.capstone.emodi.service.MemberService;
 import com.capstone.emodi.web.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,9 +26,13 @@ public class MemberController {
     public ResponseEntity<ApiResponse<MemberResponse>> updateMemberPassword(
             @PathVariable Long memberId,
             @RequestBody @Valid PasswordUpdateRequest passwordUpdateRequest) {
-        Member updatedMember = memberService.updateMemberPassword(memberId, passwordUpdateRequest.getPassword());
-        MemberResponse memberResponse = new MemberResponse(updatedMember);
-        return ResponseEntity.ok(ApiResponse.success("회원 비밀번호 수정 성공", memberResponse));
+        try{
+            Member updatedMember = memberService.updateMemberPassword(memberId, passwordUpdateRequest.getPassword());
+            MemberResponse memberResponse = new MemberResponse(updatedMember);
+            return ResponseEntity.ok(ApiResponse.success("회원 비밀번호 수정 성공", memberResponse));
+        }catch (MemberNotFoundException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));
+        }
     }
 
     // 회원 프로필 이미지 변경
@@ -34,9 +40,13 @@ public class MemberController {
     public ResponseEntity<ApiResponse<MemberResponse>> updateMemberProfileImage(
             @PathVariable Long memberId,
             @RequestParam(value = "profileImage") MultipartFile profileImage) {
-        Member updatedMember = memberService.updateMemberProfileImage(memberId, profileImage);
-        MemberResponse memberResponse = new MemberResponse(updatedMember);
-        return ResponseEntity.ok(ApiResponse.success("회원 프로필 이미지 변경 성공", memberResponse));
+        try{
+            Member updatedMember = memberService.updateMemberProfileImage(memberId, profileImage);
+            MemberResponse memberResponse = new MemberResponse(updatedMember);
+            return ResponseEntity.ok(ApiResponse.success("회원 프로필 이미지 변경 성공", memberResponse));
+        }catch (MemberNotFoundException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));
+        }
     }
     // DTO 클래스
     private static class MemberResponse {
