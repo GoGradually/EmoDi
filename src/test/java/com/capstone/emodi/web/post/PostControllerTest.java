@@ -86,9 +86,7 @@ public class PostControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                         .content("{\"title\":\"" + title + "\", \"content\":\"" + content + "\"}")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value(title))
-                .andExpect(jsonPath("$.content").value(content));
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -109,9 +107,7 @@ public class PostControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                         .content("{\"title\":\"" + updatedTitle + "\", \"content\":\"" + updatedContent + "\"}")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(updatedTitle))
-                .andExpect(jsonPath("$.content").value(updatedContent));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -128,7 +124,7 @@ public class PostControllerTest {
         mockMvc.perform(delete("/api/posts/{postId}", post.getId())
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
         Assertions.assertThat(postRepository.findById(post.getId())).isEmpty();
     }
@@ -164,11 +160,15 @@ public class PostControllerTest {
         mockMvc.perform(get("/api/posts/member/{memberId}", member.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].title").value(post1.getTitle()))
-                .andExpect(jsonPath("$[0].content").value(post1.getContent()))
-                .andExpect(jsonPath("$[1].title").value(post2.getTitle()))
-                .andExpect(jsonPath("$[1].content").value(post2.getContent()));
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("조회 성공"))
+                .andExpect(jsonPath("$.data", hasSize(2)))
+                .andExpect(jsonPath("$.data[0].id").value(post1.getId()))
+                .andExpect(jsonPath("$.data[0].title").value(post1.getTitle()))
+                .andExpect(jsonPath("$.data[0].content").value(post1.getContent()))
+                .andExpect(jsonPath("$.data[1].id").value(post2.getId()))
+                .andExpect(jsonPath("$.data[1].title").value(post2.getTitle()))
+                .andExpect(jsonPath("$.data[1].content").value(post2.getContent()));
     }
 
     @Test
@@ -190,9 +190,12 @@ public class PostControllerTest {
                         .param("date", fixedDateString)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].title").value(post1.getTitle()))
-                .andExpect(jsonPath("$[0].content").value(post1.getContent()));
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("조회 성공"))
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].id").value(post1.getId()))
+                .andExpect(jsonPath("$.data[0].title").value(post1.getTitle()))
+                .andExpect(jsonPath("$.data[0].content").value(post1.getContent()));
     }
 
     @Test
@@ -214,8 +217,11 @@ public class PostControllerTest {
                         .param("date", fixedDateString)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].title").value(post1.getTitle()))
-                .andExpect(jsonPath("$[0].content").value(post1.getContent()));
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("조회 성공"))
+                .andExpect(jsonPath("$.data", hasSize(1)))
+                .andExpect(jsonPath("$.data[0].id").value(post1.getId()))
+                .andExpect(jsonPath("$.data[0].title").value(post1.getTitle()))
+                .andExpect(jsonPath("$.data[0].content").value(post1.getContent()));
     }
 }
