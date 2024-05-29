@@ -2,7 +2,7 @@ package com.capstone.emodi.web.auth;
 
 import com.capstone.emodi.exception.InvalidTokenException;
 import com.capstone.emodi.security.JwtTokenProvider;
-import com.capstone.emodi.web.response.ApiErrorResponse;
+import com.capstone.emodi.web.response.ApiResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -31,7 +31,7 @@ public class AuthController {
                 throw new InvalidTokenException("Invalid or expired refresh token");
             }
         } catch (InvalidTokenException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiErrorResponse(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(e.getMessage()));
         }
     }
     @PostMapping("/logout")

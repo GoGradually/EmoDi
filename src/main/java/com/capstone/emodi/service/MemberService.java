@@ -35,6 +35,13 @@ public class MemberService {
         }
     }
 
+    // DB ID로 회원 조회
+    public Member findById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new MemberNotFoundException("해당 DB ID의 회원이 없습니다."));
+    }
+
+
     // 로그인 ID로 회원 조회
     public Member findByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId)
