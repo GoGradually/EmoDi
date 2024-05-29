@@ -136,10 +136,9 @@ public class PrivatePostController {
     }
 
     // 특정 사용자가 특정 날짜에 작성한 게시글 목록 조회
-    @GetMapping("/member/{loginId}/date")
-    public ResponseEntity<ApiResponse<List<PrivatePost>>> getPrivatePostsByMemberIdAndDate(@PathVariable String loginId,
+    @GetMapping("/member/{memberId}/date")
+    public ResponseEntity<ApiResponse<List<PrivatePost>>> getPrivatePostsByMemberIdAndDate(@PathVariable Long memberId,
                                                                              @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        Long memberId = memberService.findByLoginId(loginId).getId();
         List<PrivatePost> posts = privatePostService.getPrivatePostsByMemberIdAndDate(memberId, date);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", posts));
     }

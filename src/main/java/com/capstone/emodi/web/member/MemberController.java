@@ -24,12 +24,11 @@ public class MemberController {
 
 
     // 회원 비밀번호 수정
-    @PutMapping("/{loginId}/password")
+    @PutMapping("/{memberId}/password")
     public ResponseEntity<ApiResponse<MemberResponse>> updateMemberPassword(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
-            @PathVariable String loginId,
+            @PathVariable Long memberId,
             @RequestBody @Valid PasswordUpdateRequest passwordUpdateRequest) {
-        Long memberId = memberService.findByLoginId(loginId).getId();
         accessToken = accessToken.substring(7);
         ResponseEntity<ApiResponse<MemberResponse>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
@@ -41,12 +40,11 @@ public class MemberController {
     }
 
     // 회원 프로필 이미지 변경
-    @PutMapping("/{loginId}/profile-image")
+    @PutMapping("/{memberId}/profile-image")
     public ResponseEntity<ApiResponse<MemberResponse>> updateMemberProfileImage(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
-            @PathVariable String loginId,
+            @PathVariable Long memberId,
             @RequestParam(value = "profileImage") MultipartFile profileImage) {
-        Long memberId = memberService.findByLoginId(loginId).getId();
         accessToken = accessToken.substring(7);
         ResponseEntity<ApiResponse<MemberResponse>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
@@ -56,9 +54,9 @@ public class MemberController {
     }
 
     //회원 정보 조회
-    @GetMapping("/{loginId}/info")
-    public ResponseEntity<ApiResponse<MemberResponse>> getMemberInfo(@PathVariable String loginId){
-        Member member = memberService.findByLoginId(loginId);
+    @GetMapping("/{memberId}/info")
+    public ResponseEntity<ApiResponse<MemberResponse>> getMemberInfo(@PathVariable Long memberId){
+        Member member = memberService.findById(memberId);
         MemberResponse memberResponse = new MemberResponse(member);
         return ResponseEntity.ok(ApiResponse.success("사용자 조회 성공", memberResponse));
     }
