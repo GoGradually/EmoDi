@@ -9,6 +9,7 @@ import com.capstone.emodi.utils.FileUploadUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${profileImage.dir}")
     String uploadDir;
@@ -56,9 +58,7 @@ public class MemberService {
     public Member updateMemberPassword(Long memberId, String password) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("해당 회원이 없습니다. id=" + memberId));
-
-        member.changePassword(password);
-
+        member.changePassword(passwordEncoder.encode(password));
         return member;
     }
 
