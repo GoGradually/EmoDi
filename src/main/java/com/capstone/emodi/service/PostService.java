@@ -8,6 +8,7 @@ import com.capstone.emodi.exception.FileUploadException;
 import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.utils.FileUploadUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +24,8 @@ import java.util.List;
 public class PostService {
     private final PostRepository postRepository;
 
+    @Value("${postImage.dir}")
+    String uploadDir;
     // 게시글 작성
     public Post createPost(String title, String content, MultipartFile image, Member member) {
         String imagePath = null;
@@ -106,7 +109,6 @@ public class PostService {
     }
     // 이미지 저장 메서드
     private String saveImage(MultipartFile image) throws IOException {
-        String uploadDir = "uploads";
         try {
             return FileUploadUtil.saveImage(image, uploadDir);
         } catch (IOException e) {

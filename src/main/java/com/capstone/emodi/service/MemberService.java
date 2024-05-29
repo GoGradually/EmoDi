@@ -8,6 +8,7 @@ import com.capstone.emodi.exception.MemberNotFoundException;
 import com.capstone.emodi.utils.FileUploadUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+
+    @Value("${profileImage.dir}")
+    String uploadDir;
 
     // 회원 가입
     public Member join(Member member) {
@@ -63,20 +67,10 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("해당 회원이 없습니다. id=" + memberId));
         // 프로필 이미지가 제공된 경우
-        if (image != null && !image.isEmpty()) {
-            try {
-                // 기존 프로필 이미지 삭제
-                if (member.getProfileImage() != null && !member.getProfileImage().isEmpty()) {
-                    FileUploadUtil.deleteImage(member.getProfileImage());
-                }
-
-                // 새로운 프로필 이미지 저장
-                String profileImageUrl = saveProfileImage(image);
-                member.changeProfileImage(profileImageUrl);
-            } catch (IOException e) {
-                // 파일 저장 실패 시 예외 처리
-                throw new RuntimeException("Failed to update profile image", e);
-            }
+        if (image != null && !image.isEmpty() && !image.getName().equals("defalut-profile.jpg")) {
+            // 새로운 프로필 이미지 저장
+            String profileImageUrl = saveProfileImage(image);
+            member.changeProfileImage(profileImageUrl);
         } else {
             // 프로필 이미지가 제공되지 않은 경우, 기존 이미지 유지
             if (member.getProfileImage() == null || member.getProfileImage().isEmpty()) {
@@ -98,7 +92,6 @@ public class MemberService {
 
     private String saveProfileImage(MultipartFile profileImage) {
         try {
-            String uploadDir = "profile-images";
             return FileUploadUtil.saveImage(profileImage, uploadDir);
         } catch (IOException e) {
             // 파일 저장 실패 시 예외 처리
