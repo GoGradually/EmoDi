@@ -26,9 +26,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -41,7 +43,7 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping
-    public ResponseEntity<ApiResponse<Post>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+    public ResponseEntity<ApiResponse<PostResponse>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                            @RequestBody PostString postString,
                                            @RequestParam(required = false) MultipartFile image) {
         token = token.substring(7);
@@ -65,7 +67,7 @@ public class PostController {
         }
         try {
             Post post = postService.createPost(title, content, image, member);
-            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 생성 성공",post));
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 생성 성공",new PostResponse(post)));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
         }
@@ -73,7 +75,7 @@ public class PostController {
 
     // 게시글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<ApiResponse<Post>> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+    public ResponseEntity<ApiResponse<PostResponse>> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                            @PathVariable Long postId,
                                            @RequestBody PostString postString,
                                            @RequestParam (required = false) MultipartFile image) {
@@ -99,13 +101,13 @@ public class PostController {
         }
         try {
             Post post = postService.updatePost(postId, title, content, image);
-            return ResponseEntity.ok(ApiResponse.success("게시글 업데이트 성공",post));
+            return ResponseEntity.ok(ApiResponse.success("게시글 업데이트 성공",new PostResponse(post)));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
         }
     }
 
-    private ResponseEntity<ApiResponse<Post>> getPostResponseEntity(String accessToken, Long postId) {
+    private ResponseEntity<ApiResponse<PostResponse>> getPostResponseEntity(String accessToken, Long postId) {
         if (!jwtTokenProvider.validateAccessToken(accessToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("권한이 없습니다."));
         }
@@ -120,11 +122,11 @@ public class PostController {
 
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ApiResponse<Post>> deletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+    public ResponseEntity<ApiResponse<PostResponse>> deletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
                                            @PathVariable Long postId) {
         accessToken = accessToken.substring(7);
         // Access 토큰 유효성 검사
-        ResponseEntity<ApiResponse<Post>> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
+        ResponseEntity<ApiResponse<PostResponse>> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
 
         postService.deletePost(postId);
@@ -133,25 +135,28 @@ public class PostController {
 
     // 특정 회원이 작성한 게시글 목록 조회
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<ApiResponse<List<Post>>> getPostsByMemberId(@PathVariable Long memberId) {
+    public ResponseEntity<ApiResponse<List<PostResponse>>> getPostsByMemberId(@PathVariable Long memberId) {
         List<Post> posts = postService.getPostsByMemberId(memberId);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", posts));
+        List<PostResponse> postsResponse = posts.stream().map(PostResponse::new).collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", postsResponse));
     }
 
     // 특정 날짜에 작성된 게시글 목록 조회
     @GetMapping("/date")
-    public ResponseEntity<ApiResponse<List<Post>>> getPostsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public ResponseEntity<ApiResponse<List<PostResponse>>> getPostsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         List<Post> posts = postService.getPostsByDate(date);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", posts));
+        List<PostResponse> postsResponse = posts.stream().map(PostResponse::new).collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", postsResponse));
     }
 
     // 특정 사용자가 특정 날짜에 작성한 게시글 목록 조회
     @GetMapping("/member/{loginId}/date")
-    public ResponseEntity<ApiResponse<List<Post>>> getPostsByMemberIdAndDate(@PathVariable String loginId,
+    public ResponseEntity<ApiResponse<List<PostResponse>>> getPostsByMemberIdAndDate(@PathVariable String loginId,
                                                                 @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         Long memberId = memberService.findByLoginId(loginId).getId();
         List<Post> posts = postService.getPostsByMemberIdAndDate(memberId, date);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", posts));
+        List<PostResponse> postsResponse = posts.stream().map(PostResponse::new).collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", postsResponse));
     }
 
 
@@ -162,6 +167,22 @@ public class PostController {
         public String content;
     }
 
+    public static class PostResponse{
+        private String title;
+        private String content;
+        private int likeCount;
+        private String imagePath;
+        private String memberLoginId;
+        private LocalDateTime createdAt;
+        PostResponse(Post post){
+            this.title = post.getTitle();
+            this.content = post.getContent();
+            this.likeCount = post.getLikeCount();
+            this.imagePath = post.getImagePath();
+            this.memberLoginId = post.getMember().getLoginId();
+            this.createdAt = post.getCreatedAt();
+        }
+    }
 
     @PostMapping("/{postId}/like")
     public ResponseEntity<Void> likePost(@PathVariable Long postId, @RequestParam Long memberId) {
