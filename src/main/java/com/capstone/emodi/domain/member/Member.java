@@ -1,6 +1,7 @@
 package com.capstone.emodi.domain.member;
 
 import com.capstone.emodi.domain.post.Post;
+import com.capstone.emodi.domain.privatepost.PrivatePost;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -42,6 +43,10 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<PrivatePost> privatePosts = new ArrayList<>();
 
     @Column(nullable = true)
     private String profileImage = "/images/default-profile.jpg";

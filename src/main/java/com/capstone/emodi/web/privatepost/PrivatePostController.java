@@ -1,19 +1,15 @@
-package com.capstone.emodi.web.post;
+package com.capstone.emodi.web.privatepost;
 
 import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.member.MemberRepository;
-import com.capstone.emodi.domain.post.Post;
+import com.capstone.emodi.domain.privatepost.PrivatePost;
 import com.capstone.emodi.exception.FileUploadException;
 import com.capstone.emodi.exception.MemberNotFoundException;
 import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.security.JwtTokenProvider;
-import com.capstone.emodi.service.LikeService;
 import com.capstone.emodi.service.MemberService;
-import com.capstone.emodi.service.PostService;
-import com.capstone.emodi.utils.FileUploadUtil;
+import com.capstone.emodi.service.PrivatePostService;
 import com.capstone.emodi.web.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,29 +17,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/api/private/posts")
 @RequiredArgsConstructor
-public class PostController {
-    private final PostService postService;
+public class PrivatePostController {
+    private final PrivatePostService privatePostService;
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
-    private final LikeService likeService;
 
     // 게시글 작성
     @PostMapping
-    public ResponseEntity<ApiResponse<Post>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                           @RequestBody PostString postString,
-                                           @RequestParam(required = false) MultipartFile image) {
+    public ResponseEntity<ApiResponse<PrivatePost>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                        @RequestBody PostString postString,
+                                                        @RequestParam(required = false) MultipartFile image) {
         token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
 
@@ -64,7 +53,7 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("제목 또는 내용이 비어 있습니다."));
         }
         try {
-            Post post = postService.createPost(title, content, image, member);
+            PrivatePost post = privatePostService.createPrivatePost(title, content, image, member);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 생성 성공",post));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
@@ -73,10 +62,10 @@ public class PostController {
 
     // 게시글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<ApiResponse<Post>> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                           @PathVariable Long postId,
-                                           @RequestBody PostString postString,
-                                           @RequestParam (required = false) MultipartFile image) {
+    public ResponseEntity<ApiResponse<PrivatePost>> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                        @PathVariable Long postId,
+                                                        @RequestBody PostString postString,
+                                                        @RequestParam (required = false) MultipartFile image) {
 
         token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
@@ -97,21 +86,22 @@ public class PostController {
         if (title.isEmpty() || content.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("제목 또는 내용이 비어 있습니다."));
         }
+
         try {
-            Post post = postService.updatePost(postId, title, content, image);
+            PrivatePost post = privatePostService.updatePrivatePost(postId, title, content, image);
             return ResponseEntity.ok(ApiResponse.success("게시글 업데이트 성공",post));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
         }
     }
 
-    private ResponseEntity<ApiResponse<Post>> getPostResponseEntity(String accessToken, Long postId) {
+    private ResponseEntity<ApiResponse<PrivatePost>> getPostResponseEntity(String accessToken, Long postId) {
         if (!jwtTokenProvider.validateAccessToken(accessToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("권한이 없습니다."));
         }
         // 권한 체크
         String loginId = jwtTokenProvider.getLoginIdFromToken(accessToken);
-        Post post = postService.getPostById(postId);
+        PrivatePost post = privatePostService.getPrivatePostById(postId);
         if (!post.getMember().getLoginId().equals(loginId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("접근 거부됨."));
         }
@@ -120,37 +110,37 @@ public class PostController {
 
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ApiResponse<Post>> deletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
-                                           @PathVariable Long postId) {
+    public ResponseEntity<ApiResponse<PrivatePost>> deletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+                                                        @PathVariable Long postId) {
         accessToken = accessToken.substring(7);
         // Access 토큰 유효성 검사
-        ResponseEntity<ApiResponse<Post>> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
+        ResponseEntity<ApiResponse<PrivatePost>> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
 
-        postService.deletePost(postId);
+        privatePostService.deletePrivatePost(postId);
         return ResponseEntity.ok(ApiResponse.success("게시글 삭제 성공", null));
     }
 
     // 특정 회원이 작성한 게시글 목록 조회
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<ApiResponse<List<Post>>> getPostsByMemberId(@PathVariable Long memberId) {
-        List<Post> posts = postService.getPostsByMemberId(memberId);
+    public ResponseEntity<ApiResponse<List<PrivatePost>>> getPostsByMemberId(@PathVariable Long memberId) {
+        List<PrivatePost> posts = privatePostService.getPrivatePostsByMemberId(memberId);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", posts));
     }
 
     // 특정 날짜에 작성된 게시글 목록 조회
     @GetMapping("/date")
-    public ResponseEntity<ApiResponse<List<Post>>> getPostsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<Post> posts = postService.getPostsByDate(date);
+    public ResponseEntity<ApiResponse<List<PrivatePost>>> getPostsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        List<PrivatePost> posts = privatePostService.getPrivatePostsByDate(date);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", posts));
     }
 
     // 특정 사용자가 특정 날짜에 작성한 게시글 목록 조회
     @GetMapping("/member/{loginId}/date")
-    public ResponseEntity<ApiResponse<List<Post>>> getPostsByMemberIdAndDate(@PathVariable String loginId,
-                                                                @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public ResponseEntity<ApiResponse<List<PrivatePost>>> getPrivatePostsByMemberIdAndDate(@PathVariable String loginId,
+                                                                             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         Long memberId = memberService.findByLoginId(loginId).getId();
-        List<Post> posts = postService.getPostsByMemberIdAndDate(memberId, date);
+        List<PrivatePost> posts = privatePostService.getPrivatePostsByMemberIdAndDate(memberId, date);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", posts));
     }
 
@@ -162,24 +152,6 @@ public class PostController {
         public String content;
     }
 
-
-    @PostMapping("/{postId}/like")
-    public ResponseEntity<Void> likePost(@PathVariable Long postId, @RequestParam Long memberId) {
-        likeService.likePost(postId, memberId);
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{postId}/like")
-    public ResponseEntity<Void> unlikePost(@PathVariable Long postId, @RequestParam Long memberId) {
-        likeService.unlikePost(postId, memberId);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{postId}/likes")
-    public ResponseEntity<Long> getLikeCount(@PathVariable Long postId) {
-        long likeCount = likeService.getLikeCount(postId);
-        return ResponseEntity.ok(likeCount);
-    }
 
     // PostNotFoundException 처리를 위한 ExceptionHandler 추가
     @ExceptionHandler(PostNotFoundException.class)

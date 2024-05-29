@@ -3,6 +3,7 @@ package com.capstone.emodi.web.member;
 import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.exception.MemberNotFoundException;
+import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.capstone.emodi.service.MemberService;
 import com.capstone.emodi.web.response.ApiResponse;
@@ -33,13 +34,10 @@ public class MemberController {
         ResponseEntity<ApiResponse<MemberResponse>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
 
-        try{
-            Member updatedMember = memberService.updateMemberPassword(memberId, passwordUpdateRequest.getPassword());
-            MemberResponse memberResponse = new MemberResponse(updatedMember);
-            return ResponseEntity.ok(ApiResponse.success("회원 비밀번호 수정 성공", memberResponse));
-        }catch (MemberNotFoundException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));
-        }
+        Member updatedMember = memberService.updateMemberPassword(memberId, passwordUpdateRequest.getPassword());
+        MemberResponse memberResponse = new MemberResponse(updatedMember);
+        return ResponseEntity.ok(ApiResponse.success("회원 비밀번호 수정 성공", memberResponse));
+
     }
 
     // 회원 프로필 이미지 변경
@@ -48,19 +46,24 @@ public class MemberController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
             @PathVariable String loginId,
             @RequestParam(value = "profileImage") MultipartFile profileImage) {
-        try{
-            Long memberId = memberService.findByLoginId(loginId).getId();
-            accessToken = accessToken.substring(7);
-            ResponseEntity<ApiResponse<MemberResponse>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
-            if (UNAUTHORIZED != null) return UNAUTHORIZED;
-
-            Member updatedMember = memberService.updateMemberProfileImage(memberId, profileImage);
-            MemberResponse memberResponse = new MemberResponse(updatedMember);
-            return ResponseEntity.ok(ApiResponse.success("회원 프로필 이미지 변경 성공", memberResponse));
-        }catch (MemberNotFoundException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(e.getMessage()));
-        }
+        Long memberId = memberService.findByLoginId(loginId).getId();
+        accessToken = accessToken.substring(7);
+        ResponseEntity<ApiResponse<MemberResponse>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
+        if (UNAUTHORIZED != null) return UNAUTHORIZED;
+        Member updatedMember = memberService.updateMemberProfileImage(memberId, profileImage);
+        MemberResponse memberResponse = new MemberResponse(updatedMember);
+        return ResponseEntity.ok(ApiResponse.success("회원 프로필 이미지 변경 성공", memberResponse));
     }
+
+    //회원 정보 조회
+    @GetMapping("/{loginId}/info")
+    public ResponseEntity<ApiResponse<MemberResponse>> getMemberInfo(@PathVariable String loginId){
+        Member member = memberService.findByLoginId(loginId);
+        MemberResponse memberResponse = new MemberResponse(member);
+        return ResponseEntity.ok(ApiResponse.success("사용자 조회 성공", memberResponse));
+    }
+    //회원 프로필 이미지 조회
+
     // DTO 클래스
     private static class MemberResponse {
         private Long id;
@@ -68,7 +71,6 @@ public class MemberController {
         private String username;
         private String email;
         private String tellNumber;
-        private String profileImage;
 
         public MemberResponse(Member member) {
             this.id = member.getId();
@@ -76,7 +78,6 @@ public class MemberController {
             this.username = member.getUsername();
             this.email = member.getEmail();
             this.tellNumber = member.getTellNumber();
-            this.profileImage = member.getProfileImage();
         }
 
         // Getter 메서드 생략
@@ -108,5 +109,9 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("접근 거부됨."));
         }
         return null;
+    }
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ApiResponse<MemberResponse>> handleMemberNotFoundException(MemberNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(ex.getMessage()));
     }
 }
