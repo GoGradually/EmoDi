@@ -1,9 +1,13 @@
 package com.capstone.emodi.web.dto;
 
 import com.capstone.emodi.domain.privatepost.PrivatePost;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
+@Schema
 public class PrivatePostDto{
     private Long id;
     private String title;

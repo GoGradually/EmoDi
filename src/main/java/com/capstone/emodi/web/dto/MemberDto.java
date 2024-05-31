@@ -1,7 +1,11 @@
 package com.capstone.emodi.web.dto;
 
 import com.capstone.emodi.domain.member.Member;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
+@Data
+@Schema
 public class MemberDto {
     private Long id;
     private String loginId;

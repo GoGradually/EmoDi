@@ -1,9 +1,13 @@
 package com.capstone.emodi.web.dto;
 
 import com.capstone.emodi.domain.post.Post;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
+@Schema
 public class PostDto {
     private String title;
     private String content;

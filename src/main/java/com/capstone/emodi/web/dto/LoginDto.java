@@ -1,10 +1,12 @@
 package com.capstone.emodi.web.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
+@Schema
 public class LoginDto {
     private String message;
     private String accessToken;
