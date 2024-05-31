@@ -26,7 +26,7 @@ public class FeedService {
 
     public Page<Post> getFriendFeed(Long memberId, Pageable pageable) {
         try {
-            List<Post> mergedPosts = postRepository.findRecentPostsAndLikedPostsByFriendsWithPaging(memberId, pageable)
+            List<Post> mergedPosts = postRepository.findRecentPostsAndLikedPostsByFriendsWithPagingWithMemberWithoutPrivatePosts(memberId, pageable)
                     .stream()
                     .distinct()
                     .collect(Collectors.toList());

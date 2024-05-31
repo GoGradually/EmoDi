@@ -9,6 +9,10 @@ import com.capstone.emodi.security.JwtTokenProvider;
 import com.capstone.emodi.service.MemberService;
 import com.capstone.emodi.service.PrivatePostService;
 import com.capstone.emodi.web.response.ApiResponse;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/private/posts")
@@ -30,7 +36,7 @@ public class PrivatePostController {
 
     // 게시글 작성
     @PostMapping
-    public ResponseEntity<ApiResponse<PrivatePost>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+    public ResponseEntity<ApiResponse<PrivatePostDto>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                                         @RequestBody PostString postString,
                                                         @RequestParam(required = false) MultipartFile image) {
         token = token.substring(7);
@@ -54,7 +60,8 @@ public class PrivatePostController {
         }
         try {
             PrivatePost post = privatePostService.createPrivatePost(title, content, image, member);
-            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 생성 성공",post));
+            PrivatePostDto retPost = new PrivatePostDto(post);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 생성 성공",retPost));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
         }
@@ -62,7 +69,7 @@ public class PrivatePostController {
 
     // 게시글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PrivatePost>> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+    public ResponseEntity<ApiResponse<PrivatePostDto>> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                                         @PathVariable Long postId,
                                                         @RequestBody PostString postString,
                                                         @RequestParam (required = false) MultipartFile image) {
@@ -89,13 +96,14 @@ public class PrivatePostController {
 
         try {
             PrivatePost post = privatePostService.updatePrivatePost(postId, title, content, image);
-            return ResponseEntity.ok(ApiResponse.success("게시글 업데이트 성공",post));
+            PrivatePostDto retPost = new PrivatePostDto(post);
+            return ResponseEntity.ok(ApiResponse.success("게시글 업데이트 성공",retPost));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
         }
     }
 
-    private ResponseEntity<ApiResponse<PrivatePost>> getPostResponseEntity(String accessToken, Long postId) {
+    private ResponseEntity<ApiResponse<PrivatePostDto>> getPostResponseEntity(String accessToken, Long postId) {
         if (!jwtTokenProvider.validateAccessToken(accessToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("권한이 없습니다."));
         }
@@ -110,11 +118,11 @@ public class PrivatePostController {
 
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PrivatePost>> deletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+    public ResponseEntity<ApiResponse<PrivatePostDto>> deletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
                                                         @PathVariable Long postId) {
         accessToken = accessToken.substring(7);
         // Access 토큰 유효성 검사
-        ResponseEntity<ApiResponse<PrivatePost>> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
+        ResponseEntity<ApiResponse<PrivatePostDto>> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
 
         privatePostService.deletePrivatePost(postId);
@@ -123,24 +131,27 @@ public class PrivatePostController {
 
     // 특정 회원이 작성한 게시글 목록 조회
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<ApiResponse<List<PrivatePost>>> getPostsByMemberId(@PathVariable Long memberId) {
+    public ResponseEntity<ApiResponse<List<PrivatePostDto>>> getPostsByMemberId(@PathVariable Long memberId) {
         List<PrivatePost> posts = privatePostService.getPrivatePostsByMemberId(memberId);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", posts));
+        List<PrivatePostDto> retPosts = posts.stream().map(PrivatePostDto::new).collect(Collectors.toList());;
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", retPosts));
     }
 
     // 특정 날짜에 작성된 게시글 목록 조회
     @GetMapping("/date")
-    public ResponseEntity<ApiResponse<List<PrivatePost>>> getPostsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public ResponseEntity<ApiResponse<List<PrivatePostDto>>> getPostsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         List<PrivatePost> posts = privatePostService.getPrivatePostsByDate(date);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", posts));
+        List<PrivatePostDto> retPosts = posts.stream().map(PrivatePostDto::new).collect(Collectors.toList());;
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", retPosts));
     }
 
     // 특정 사용자가 특정 날짜에 작성한 게시글 목록 조회
     @GetMapping("/member/{memberId}/date")
-    public ResponseEntity<ApiResponse<List<PrivatePost>>> getPrivatePostsByMemberIdAndDate(@PathVariable Long memberId,
+    public ResponseEntity<ApiResponse<List<PrivatePostDto>>> getPrivatePostsByMemberIdAndDate(@PathVariable Long memberId,
                                                                              @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         List<PrivatePost> posts = privatePostService.getPrivatePostsByMemberIdAndDate(memberId, date);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", posts));
+        List<PrivatePostDto> retPosts = posts.stream().map(PrivatePostDto::new).collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", retPosts));
     }
 
 
@@ -149,6 +160,21 @@ public class PrivatePostController {
     public static class PostString{
         public String title;
         public String content;
+    }
+    public static class PrivatePostDto{
+        private Long id;
+        private String title;
+        private String content;
+        private String imagePath;
+        private LocalDateTime createdAt;
+
+        public PrivatePostDto(PrivatePost post) {
+            this.id = post.getId();
+            this.title = post.getTitle();
+            this.content = post.getContent();
+            this.imagePath = post.getImagePath();
+            this.createdAt = post.getCreatedAt();
+        }
     }
 
 

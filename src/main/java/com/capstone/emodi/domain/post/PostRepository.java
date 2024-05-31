@@ -28,6 +28,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "WHERE p.member.id IN (SELECT f.friend.id FROM Friendship f WHERE f.member.id = :memberId) " +
             "OR p.id IN (SELECT l.post.id FROM Like l WHERE l.member.id IN (SELECT f.friend.id FROM Friendship f WHERE f.member.id = :memberId)) " +
             "ORDER BY p.createdAt DESC")
-    Page<Post> findRecentPostsAndLikedPostsByFriendsWithPaging(@Param("memberId") Long memberId, Pageable pageable);
+    Page<Post> findRecentPostsAndLikedPostsByFriendsWithPagingWithMemberWithoutPrivatePosts(@Param("memberId") Long memberId, Pageable pageable);
 
 }
