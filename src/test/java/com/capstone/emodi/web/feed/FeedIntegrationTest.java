@@ -19,6 +19,7 @@ import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.domain.post.PostRepository;
 import com.capstone.emodi.service.FeedService;
 import com.capstone.emodi.service.LikeService;
+import com.capstone.emodi.web.dto.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -156,7 +157,7 @@ public class FeedIntegrationTest {
         likeService.likePost(post.getId(), friend1.getId());
 
         //when
-        Page<Post> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
+        Page<PostResponse> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
 
         //then
         assertEquals(1, feed.getContent().size());

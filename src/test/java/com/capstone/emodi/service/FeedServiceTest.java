@@ -13,6 +13,7 @@ import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.domain.member.MemberRepository;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.domain.post.PostRepository;
+import com.capstone.emodi.web.dto.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +86,7 @@ public class FeedServiceTest {
         likeService.likePost(post2.getId(), friend2.getId());
 
         //when
-        Page<Post> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
+        Page<PostResponse> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
 
         //then
         assertEquals(2, feed.getContent().size());
@@ -106,8 +107,8 @@ public class FeedServiceTest {
         }
 
         //when
-        Page<Post> feed1 = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
-        Page<Post> feed2 = feedService.getFriendFeed(member.getId(), PageRequest.of(1, 10));
+        Page<PostResponse> feed1 = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
+        Page<PostResponse> feed2 = feedService.getFriendFeed(member.getId(), PageRequest.of(1, 10));
 
         //then
         assertEquals(10, feed1.getContent().size());
@@ -127,7 +128,7 @@ public class FeedServiceTest {
         postRepository.save(post);
 
         //when
-        Page<Post> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
+        Page<PostResponse> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
 
         //then
         assertEquals(0, feed.getContent().size());

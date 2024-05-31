@@ -1,6 +1,7 @@
 package com.capstone.emodi.web.feed;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.service.FeedService;
+import com.capstone.emodi.web.dto.PostResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,13 +22,13 @@ public class FeedController {
     }
 
     @GetMapping("/feed")
-    public ResponseEntity<Page<Post>> getFriendFeed(
+    public ResponseEntity<Page<PostResponse>> getFriendFeed(
             @RequestParam Long memberId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Post> feed = feedService.getFriendFeed(memberId, pageable);
+        Page<PostResponse> feed = feedService.getFriendFeed(memberId, pageable);
         return ResponseEntity.ok(feed);
     }
 }

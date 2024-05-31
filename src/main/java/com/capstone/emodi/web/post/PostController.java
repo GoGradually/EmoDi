@@ -11,6 +11,7 @@ import com.capstone.emodi.service.LikeService;
 import com.capstone.emodi.service.MemberService;
 import com.capstone.emodi.service.PostService;
 import com.capstone.emodi.utils.FileUploadUtil;
+import com.capstone.emodi.web.dto.PostResponse;
 import com.capstone.emodi.web.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -167,22 +168,7 @@ public class PostController {
         public String content;
     }
 
-    public static class PostResponse{
-        private String title;
-        private String content;
-        private int likeCount;
-        private String imagePath;
-        private String memberLoginId;
-        private LocalDateTime createdAt;
-        PostResponse(Post post){
-            this.title = post.getTitle();
-            this.content = post.getContent();
-            this.likeCount = post.getLikeCount();
-            this.imagePath = post.getImagePath();
-            this.memberLoginId = post.getMember().getLoginId();
-            this.createdAt = post.getCreatedAt();
-        }
-    }
+
 
     @PostMapping("/{postId}/like")
     public ResponseEntity<Void> likePost(@PathVariable Long postId, @RequestParam Long memberId) {

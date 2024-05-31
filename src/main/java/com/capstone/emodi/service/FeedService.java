@@ -2,6 +2,8 @@ package com.capstone.emodi.service;
 
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.domain.post.PostRepository;
+import com.capstone.emodi.web.dto.PostResponse;
+import com.capstone.emodi.web.post.PostController;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -24,12 +26,14 @@ public class FeedService {
         this.postRepository = postRepository;
     }
 
-    public Page<Post> getFriendFeed(Long memberId, Pageable pageable) {
+    public Page<PostResponse> getFriendFeed(Long memberId, Pageable pageable) {
         try {
-            List<Post> mergedPosts = postRepository.findRecentPostsAndLikedPostsByFriendsWithPagingWithMemberWithoutPrivatePosts(memberId, pageable)
+            List<PostResponse> mergedPosts = postRepository.findRecentPostsAndLikedPostsByFriendsWithPagingWithMemberWithoutPrivatePosts(memberId, pageable)
                     .stream()
                     .distinct()
+                    .map(PostResponse::new)
                     .collect(Collectors.toList());
+
 
             return new PageImpl<>(mergedPosts, pageable, mergedPosts.size());
         } catch (Exception e) {
