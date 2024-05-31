@@ -8,6 +8,7 @@ import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.capstone.emodi.service.MemberService;
 import com.capstone.emodi.service.PrivatePostService;
+import com.capstone.emodi.web.dto.PrivatePostDto;
 import com.capstone.emodi.web.response.ApiResponse;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -70,9 +71,9 @@ public class PrivatePostController {
     // 게시글 수정
     @PutMapping("/{postId}")
     public ResponseEntity<ApiResponse<PrivatePostDto>> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                                        @PathVariable Long postId,
-                                                        @RequestBody PostString postString,
-                                                        @RequestParam (required = false) MultipartFile image) {
+                                                                  @PathVariable Long postId,
+                                                                  @RequestBody PostString postString,
+                                                                  @RequestParam (required = false) MultipartFile image) {
 
         token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
@@ -161,21 +162,7 @@ public class PrivatePostController {
         public String title;
         public String content;
     }
-    public static class PrivatePostDto{
-        private Long id;
-        private String title;
-        private String content;
-        private String imagePath;
-        private LocalDateTime createdAt;
 
-        public PrivatePostDto(PrivatePost post) {
-            this.id = post.getId();
-            this.title = post.getTitle();
-            this.content = post.getContent();
-            this.imagePath = post.getImagePath();
-            this.createdAt = post.getCreatedAt();
-        }
-    }
 
 
     // PostNotFoundException 처리를 위한 ExceptionHandler 추가

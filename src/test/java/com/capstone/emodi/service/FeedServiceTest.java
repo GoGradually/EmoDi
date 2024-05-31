@@ -3,17 +3,14 @@ package com.capstone.emodi.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.capstone.emodi.domain.friendship.Friendship;
 import com.capstone.emodi.domain.friendship.FriendshipRepository;
-import com.capstone.emodi.domain.like.Like;
-import com.capstone.emodi.domain.like.LikeRepository;
 import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.domain.member.MemberRepository;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.domain.post.PostRepository;
-import com.capstone.emodi.web.dto.PostResponse;
+import com.capstone.emodi.web.dto.PostDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +83,7 @@ public class FeedServiceTest {
         likeService.likePost(post2.getId(), friend2.getId());
 
         //when
-        Page<PostResponse> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
+        Page<PostDto> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
 
         //then
         assertEquals(2, feed.getContent().size());
@@ -107,8 +104,8 @@ public class FeedServiceTest {
         }
 
         //when
-        Page<PostResponse> feed1 = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
-        Page<PostResponse> feed2 = feedService.getFriendFeed(member.getId(), PageRequest.of(1, 10));
+        Page<PostDto> feed1 = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
+        Page<PostDto> feed2 = feedService.getFriendFeed(member.getId(), PageRequest.of(1, 10));
 
         //then
         assertEquals(10, feed1.getContent().size());
@@ -128,7 +125,7 @@ public class FeedServiceTest {
         postRepository.save(post);
 
         //when
-        Page<PostResponse> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
+        Page<PostDto> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
 
         //then
         assertEquals(0, feed.getContent().size());

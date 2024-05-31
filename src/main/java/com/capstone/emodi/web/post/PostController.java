@@ -1,7 +1,6 @@
 package com.capstone.emodi.web.post;
 
 import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.member.MemberRepository;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.exception.FileUploadException;
 import com.capstone.emodi.exception.MemberNotFoundException;
@@ -10,11 +9,9 @@ import com.capstone.emodi.security.JwtTokenProvider;
 import com.capstone.emodi.service.LikeService;
 import com.capstone.emodi.service.MemberService;
 import com.capstone.emodi.service.PostService;
-import com.capstone.emodi.utils.FileUploadUtil;
-import com.capstone.emodi.web.dto.PostResponse;
+import com.capstone.emodi.web.dto.PostDto;
 import com.capstone.emodi.web.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,15 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,9 +34,9 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping
-    public ResponseEntity<ApiResponse<PostResponse>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                           @RequestBody PostString postString,
-                                           @RequestParam(required = false) MultipartFile image) {
+    public ResponseEntity<ApiResponse<PostDto>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                           @RequestBody PostString postString,
+                                                           @RequestParam(required = false) MultipartFile image) {
         token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
 
@@ -68,7 +58,7 @@ public class PostController {
         }
         try {
             Post post = postService.createPost(title, content, image, member);
-            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 생성 성공",new PostResponse(post)));
+            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 생성 성공",new PostDto(post)));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
         }
@@ -76,10 +66,10 @@ public class PostController {
 
     // 게시글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostResponse>> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                           @PathVariable Long postId,
-                                           @RequestBody PostString postString,
-                                           @RequestParam (required = false) MultipartFile image) {
+    public ResponseEntity<ApiResponse<PostDto>> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                           @PathVariable Long postId,
+                                                           @RequestBody PostString postString,
+                                                           @RequestParam (required = false) MultipartFile image) {
 
         token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
@@ -102,13 +92,13 @@ public class PostController {
         }
         try {
             Post post = postService.updatePost(postId, title, content, image);
-            return ResponseEntity.ok(ApiResponse.success("게시글 업데이트 성공",new PostResponse(post)));
+            return ResponseEntity.ok(ApiResponse.success("게시글 업데이트 성공",new PostDto(post)));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
         }
     }
 
-    private ResponseEntity<ApiResponse<PostResponse>> getPostResponseEntity(String accessToken, Long postId) {
+    private ResponseEntity<ApiResponse<PostDto>> getPostResponseEntity(String accessToken, Long postId) {
         if (!jwtTokenProvider.validateAccessToken(accessToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("권한이 없습니다."));
         }
@@ -123,11 +113,11 @@ public class PostController {
 
     // 게시글 삭제
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostResponse>> deletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
-                                           @PathVariable Long postId) {
+    public ResponseEntity<ApiResponse<PostDto>> deletePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
+                                                           @PathVariable Long postId) {
         accessToken = accessToken.substring(7);
         // Access 토큰 유효성 검사
-        ResponseEntity<ApiResponse<PostResponse>> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
+        ResponseEntity<ApiResponse<PostDto>> UNAUTHORIZED = getPostResponseEntity(accessToken, postId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
 
         postService.deletePost(postId);
@@ -136,27 +126,27 @@ public class PostController {
 
     // 특정 회원이 작성한 게시글 목록 조회
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<ApiResponse<List<PostResponse>>> getPostsByMemberId(@PathVariable Long memberId) {
+    public ResponseEntity<ApiResponse<List<PostDto>>> getPostsByMemberId(@PathVariable Long memberId) {
         List<Post> posts = postService.getPostsByMemberId(memberId);
-        List<PostResponse> postsResponse = posts.stream().map(PostResponse::new).collect(Collectors.toList());
+        List<PostDto> postsResponse = posts.stream().map(PostDto::new).collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", postsResponse));
     }
 
     // 특정 날짜에 작성된 게시글 목록 조회
     @GetMapping("/date")
-    public ResponseEntity<ApiResponse<List<PostResponse>>> getPostsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public ResponseEntity<ApiResponse<List<PostDto>>> getPostsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         List<Post> posts = postService.getPostsByDate(date);
-        List<PostResponse> postsResponse = posts.stream().map(PostResponse::new).collect(Collectors.toList());
+        List<PostDto> postsResponse = posts.stream().map(PostDto::new).collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", postsResponse));
     }
 
     // 특정 사용자가 특정 날짜에 작성한 게시글 목록 조회
     @GetMapping("/member/{loginId}/date")
-    public ResponseEntity<ApiResponse<List<PostResponse>>> getPostsByMemberIdAndDate(@PathVariable String loginId,
-                                                                @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+    public ResponseEntity<ApiResponse<List<PostDto>>> getPostsByMemberIdAndDate(@PathVariable String loginId,
+                                                                                @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         Long memberId = memberService.findByLoginId(loginId).getId();
         List<Post> posts = postService.getPostsByMemberIdAndDate(memberId, date);
-        List<PostResponse> postsResponse = posts.stream().map(PostResponse::new).collect(Collectors.toList());
+        List<PostDto> postsResponse = posts.stream().map(PostDto::new).collect(Collectors.toList());
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("조회 성공", postsResponse));
     }
 

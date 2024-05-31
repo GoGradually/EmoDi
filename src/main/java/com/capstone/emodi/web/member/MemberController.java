@@ -1,18 +1,16 @@
 package com.capstone.emodi.web.member;
 
 import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.exception.MemberNotFoundException;
-import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.capstone.emodi.service.MemberService;
+import com.capstone.emodi.web.dto.MemberDto;
 import com.capstone.emodi.web.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,61 +23,45 @@ public class MemberController {
 
     // 회원 비밀번호 수정
     @PutMapping("/{memberId}/password")
-    public ResponseEntity<ApiResponse<MemberResponse>> updateMemberPassword(
+    public ResponseEntity<ApiResponse<MemberDto>> updateMemberPassword(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
             @PathVariable Long memberId,
             @RequestBody @Valid PasswordUpdateRequest passwordUpdateRequest) {
         accessToken = accessToken.substring(7);
-        ResponseEntity<ApiResponse<MemberResponse>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
+        ResponseEntity<ApiResponse<MemberDto>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
 
         Member updatedMember = memberService.updateMemberPassword(memberId, passwordUpdateRequest.getPassword());
-        MemberResponse memberResponse = new MemberResponse(updatedMember);
+        MemberDto memberResponse = new MemberDto(updatedMember);
         return ResponseEntity.ok(ApiResponse.success("회원 비밀번호 수정 성공", memberResponse));
 
     }
 
     // 회원 프로필 이미지 변경
     @PutMapping("/{memberId}/profile-image")
-    public ResponseEntity<ApiResponse<MemberResponse>> updateMemberProfileImage(
+    public ResponseEntity<ApiResponse<MemberDto>> updateMemberProfileImage(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
             @PathVariable Long memberId,
             @RequestParam(value = "profileImage") MultipartFile profileImage) {
         accessToken = accessToken.substring(7);
-        ResponseEntity<ApiResponse<MemberResponse>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
+        ResponseEntity<ApiResponse<MemberDto>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
         Member updatedMember = memberService.updateMemberProfileImage(memberId, profileImage);
-        MemberResponse memberResponse = new MemberResponse(updatedMember);
+        MemberDto memberResponse = new MemberDto(updatedMember);
         return ResponseEntity.ok(ApiResponse.success("회원 프로필 이미지 변경 성공", memberResponse));
     }
 
     //회원 정보 조회
     @GetMapping("/{memberId}/info")
-    public ResponseEntity<ApiResponse<MemberResponse>> getMemberInfo(@PathVariable Long memberId){
+    public ResponseEntity<ApiResponse<MemberDto>> getMemberInfo(@PathVariable Long memberId){
         Member member = memberService.findById(memberId);
-        MemberResponse memberResponse = new MemberResponse(member);
+        MemberDto memberResponse = new MemberDto(member);
         return ResponseEntity.ok(ApiResponse.success("사용자 조회 성공", memberResponse));
     }
     //회원 프로필 이미지 조회
 
     // DTO 클래스
-    private static class MemberResponse {
-        private Long id;
-        private String loginId;
-        private String username;
-        private String email;
-        private String tellNumber;
 
-        public MemberResponse(Member member) {
-            this.id = member.getId();
-            this.loginId = member.getLoginId();
-            this.username = member.getUsername();
-            this.email = member.getEmail();
-            this.tellNumber = member.getTellNumber();
-        }
-
-        // Getter 메서드 생략
-    }
 
     static class PasswordUpdateRequest {
         private String password;
@@ -96,7 +78,7 @@ public class MemberController {
             this.password = password;
         }
     }
-    private ResponseEntity<ApiResponse<MemberResponse>> getMemberResponseEntity(String accessToken, Long memberId) {
+    private ResponseEntity<ApiResponse<MemberDto>> getMemberResponseEntity(String accessToken, Long memberId) {
         if (!jwtTokenProvider.validateAccessToken(accessToken)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error("권한이 없습니다."));
         }
@@ -109,7 +91,7 @@ public class MemberController {
         return null;
     }
     @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<ApiResponse<MemberResponse>> handleMemberNotFoundException(MemberNotFoundException ex) {
+    public ResponseEntity<ApiResponse<MemberDto>> handleMemberNotFoundException(MemberNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error(ex.getMessage()));
     }
 }

@@ -7,19 +7,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.capstone.emodi.domain.friendship.Friendship;
 import com.capstone.emodi.domain.friendship.FriendshipRepository;
-import com.capstone.emodi.domain.like.Like;
-import com.capstone.emodi.domain.like.LikeRepository;
 import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.domain.member.MemberRepository;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.domain.post.PostRepository;
 import com.capstone.emodi.service.FeedService;
 import com.capstone.emodi.service.LikeService;
-import com.capstone.emodi.web.dto.PostResponse;
+import com.capstone.emodi.web.dto.PostDto;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -157,7 +154,7 @@ public class FeedIntegrationTest {
         likeService.likePost(post.getId(), friend1.getId());
 
         //when
-        Page<PostResponse> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
+        Page<PostDto> feed = feedService.getFriendFeed(member.getId(), PageRequest.of(0, 10));
 
         //then
         assertEquals(1, feed.getContent().size());

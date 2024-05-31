@@ -3,6 +3,7 @@ package com.capstone.emodi.web.signup;
 import com.capstone.emodi.exception.DuplicateMemberException;
 import com.capstone.emodi.service.SignUpService;
 import com.capstone.emodi.security.JwtTokenProvider;
+import com.capstone.emodi.web.dto.SignupDto;
 import com.capstone.emodi.web.response.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -25,11 +26,11 @@ public class SignUpController {
     private final SignUpService signUpService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<SignupResponse>> signup(@RequestBody @Valid SignupRequest signupRequest) {
+    public ResponseEntity<ApiResponse<SignupDto>> signup(@RequestBody @Valid SignupRequest signupRequest) {
         try {
             Map<String, String> tokens = signUpService.signUp(signupRequest);
-            SignupResponse signupResponse = new SignupResponse("회원가입이 완료되었습니다.", tokens.get("accessToken"), tokens.get("refreshToken"));
-            return ResponseEntity.ok(ApiResponse.success("회원가입 성공", signupResponse));
+            SignupDto SignupDto = new SignupDto("회원가입이 완료되었습니다.", tokens.get("accessToken"), tokens.get("refreshToken"));
+            return ResponseEntity.ok(ApiResponse.success("회원가입 성공", SignupDto));
         } catch (DuplicateMemberException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(e.getMessage()));
         }
@@ -59,17 +60,5 @@ public class SignUpController {
         private String profileImage;
     }
 
-    @Getter
-    @Setter
-    private static class SignupResponse {
-        private String message;
-        private String accessToken;
-        private String refreshToken;
 
-        public SignupResponse(String message, String accessToken, String refreshToken) {
-            this.message = message;
-            this.accessToken = accessToken;
-            this.refreshToken = refreshToken;
-        }
-    }
 }
