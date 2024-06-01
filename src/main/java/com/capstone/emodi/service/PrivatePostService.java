@@ -1,6 +1,9 @@
 package com.capstone.emodi.service;
 
+import com.capstone.emodi.domain.keyword.Keyword;
 import com.capstone.emodi.domain.member.Member;
+import com.capstone.emodi.domain.privateKeyword.PrivateKeyword;
+import com.capstone.emodi.domain.privateKeyword.PrivateKeywordRepository;
 import com.capstone.emodi.domain.privatepost.PrivatePost;
 import com.capstone.emodi.domain.privatepost.PrivatePostRepository;
 import com.capstone.emodi.exception.FileUploadException;
@@ -21,9 +24,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PrivatePostService {
     private final PrivatePostRepository privatePostRepository;
-
+    private final PrivateKeywordRepository privateKeywordRepository;
     // 게시글 작성
-    public PrivatePost createPrivatePost(String title, String content, MultipartFile image, Member member) {
+    public PrivatePost createPrivatePost(String title, String content, MultipartFile image, Member member, List<String> keywordString) {
         String imagePath = null;
         if (image != null) {
             try {
@@ -38,11 +41,14 @@ public class PrivatePostService {
                 .imagePath(imagePath)
                 .member(member)
                 .build();
-        return privatePostRepository.save(privatePost);
+        privatePostRepository.save(privatePost);
+        List<PrivateKeyword> keywords = keywordString.stream().map(s->new PrivateKeyword(privatePost, s)).toList();
+        privateKeywordRepository.saveAll(keywords);
+        return privatePost;
     }
 
     // 게시글 수정
-    public PrivatePost updatePrivatePost(Long privatePostId, String title, String content, MultipartFile image) {
+    public PrivatePost updatePrivatePost(Long privatePostId, String title, String content, MultipartFile image, List<String> keywordString) {
 
         String imagePath = null;
         if (image != null) {
@@ -55,6 +61,9 @@ public class PrivatePostService {
         PrivatePost privatePost = privatePostRepository.findById(privatePostId)
                 .orElseThrow(() -> new PostNotFoundException("해당 게시글이 없습니다. id=" + privatePostId));
         privatePost.update(title, content, imagePath);
+        privateKeywordRepository.deleteByPrivatePost(privatePost);
+        List<PrivateKeyword> keywords = keywordString.stream().map(s->new PrivateKeyword(privatePost, s)).toList();
+        privateKeywordRepository.saveAll(keywords);
         return privatePost;
     }
 

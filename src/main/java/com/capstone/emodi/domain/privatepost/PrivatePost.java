@@ -1,7 +1,9 @@
 package com.capstone.emodi.domain.privatepost;
 
+import com.capstone.emodi.domain.keyword.Keyword;
 import com.capstone.emodi.domain.like.Like;
 import com.capstone.emodi.domain.member.Member;
+import com.capstone.emodi.domain.privateKeyword.PrivateKeyword;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -34,6 +36,10 @@ public class PrivatePost {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+
+    @OneToMany(mappedBy = "private_post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PrivateKeyword> keyword;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

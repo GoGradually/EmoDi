@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,7 @@ public class PrivatePostController {
         String title = postString.title;
         String content = postString.content;
         Member member;
+        List<String> keywords = new ArrayList<>(postString.keyword);
         try{
             member = memberService.findByLoginId(loginId);
         }catch (MemberNotFoundException e){
@@ -60,7 +62,7 @@ public class PrivatePostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("제목 또는 내용이 비어 있습니다."));
         }
         try {
-            PrivatePost post = privatePostService.createPrivatePost(title, content, image, member);
+            PrivatePost post = privatePostService.createPrivatePost(title, content, image, member, keywords);
             PrivatePostDto retPost = new PrivatePostDto(post);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 생성 성공",retPost));
         } catch (FileUploadException e) {
@@ -81,6 +83,7 @@ public class PrivatePostController {
         String title = postString.title;
         String content = postString.content;
         Member member;
+        List<String> keywords = new ArrayList<>(postString.keyword);
         try{
             member = memberService.findByLoginId(loginId);
         }catch (MemberNotFoundException e){
@@ -96,7 +99,7 @@ public class PrivatePostController {
         }
 
         try {
-            PrivatePost post = privatePostService.updatePrivatePost(postId, title, content, image);
+            PrivatePost post = privatePostService.updatePrivatePost(postId, title, content, image, keywords);
             PrivatePostDto retPost = new PrivatePostDto(post);
             return ResponseEntity.ok(ApiResponse.success("게시글 업데이트 성공",retPost));
         } catch (FileUploadException e) {
@@ -161,6 +164,7 @@ public class PrivatePostController {
     public static class PostString{
         public String title;
         public String content;
+        public List<String> keyword;
     }
 
 
