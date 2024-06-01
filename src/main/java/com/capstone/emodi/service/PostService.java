@@ -1,6 +1,8 @@
 // PostService.java
 package com.capstone.emodi.service;
 
+import com.capstone.emodi.domain.keyword.Keyword;
+import com.capstone.emodi.domain.keyword.KeywordRepository;
 import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.domain.post.PostRepository;
@@ -17,17 +19,19 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final KeywordRepository keywordRepository;
 
     @Value("${postImage.dir}")
     String uploadDir;
     // 게시글 작성
-    public Post createPost(String title, String content, MultipartFile image, Member member) {
+    public Post createPost(String title, String content, MultipartFile image, Member member, List<String> keywordString) {
         String imagePath = null;
         if (image != null) {
             try {
@@ -42,12 +46,14 @@ public class PostService {
                 .imagePath(imagePath)
                 .member(member)
                 .build();
-        return postRepository.save(post);
+        postRepository.save(post);
+        List<Keyword> keywords = keywordString.stream().map(s->new Keyword(post, s)).toList();
+        keywordRepository.saveAll(keywords);
+        return post;
     }
 
     // 게시글 수정
-    public Post updatePost(Long postId, String title, String content, MultipartFile image) {
-
+    public Post updatePost(Long postId, String title, String content, MultipartFile image, List<String> keywordString) {
         String imagePath = null;
         if (image != null) {
             try {
@@ -59,6 +65,9 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("해당 게시글이 없습니다. id=" + postId));
         post.update(title, content, imagePath);
+        keywordRepository.deleteByPost(post);
+        List<Keyword> keywords = keywordString.stream().map(s->new Keyword(post, s)).toList();
+        keywordRepository.saveAll(keywords);
         return post;
     }
 

@@ -1,5 +1,6 @@
 package com.capstone.emodi.web.post;
 
+import com.capstone.emodi.domain.keyword.Keyword;
 import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.exception.FileUploadException;
@@ -19,7 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Key;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +46,7 @@ public class PostController {
         String title = postString.title;
         String content = postString.content;
         Member member;
+        List<String> keywords = new ArrayList<>(postString.keyword);
         try{
             member = memberService.findByLoginId(loginId);
         }catch (MemberNotFoundException e){
@@ -57,7 +61,7 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("제목 또는 내용이 비어 있습니다."));
         }
         try {
-            Post post = postService.createPost(title, content, image, member);
+            Post post = postService.createPost(title, content, image, member, keywords);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 생성 성공",new PostDto(post)));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
@@ -76,6 +80,7 @@ public class PostController {
 
         String title = postString.title;
         String content = postString.content;
+        List<String> keywords = new ArrayList<>(postString.keyword);
         Member member;
         try{
             member = memberService.findByLoginId(loginId);
@@ -91,7 +96,7 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("제목 또는 내용이 비어 있습니다."));
         }
         try {
-            Post post = postService.updatePost(postId, title, content, image);
+            Post post = postService.updatePost(postId, title, content, image, keywords);
             return ResponseEntity.ok(ApiResponse.success("게시글 업데이트 성공",new PostDto(post)));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
@@ -156,6 +161,7 @@ public class PostController {
     public static class PostString{
         public String title;
         public String content;
+        public List<String> keyword;
     }
 
 

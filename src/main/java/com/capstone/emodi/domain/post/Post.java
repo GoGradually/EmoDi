@@ -1,5 +1,6 @@
 package com.capstone.emodi.domain.post;
 
+import com.capstone.emodi.domain.keyword.Keyword;
 import com.capstone.emodi.domain.like.Like;
 import com.capstone.emodi.domain.member.Member;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "posts")
@@ -39,6 +41,9 @@ public class Post {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Keyword> keyword;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 
     public int getLikeCount() {
@@ -50,7 +55,7 @@ public class Post {
         this.createdAt = this.createdAt == null ? LocalDateTime.now() : this.createdAt;
     }
     @Builder
-    public Post(String title, String content, String imagePath, LocalDateTime createdAt, Member member) {
+    public Post(String title, String content, String imagePath, LocalDateTime createdAt, Member member, List<String> keyword) {
         this.title = title;
         this.content = content;
         this.imagePath = imagePath;
@@ -58,7 +63,7 @@ public class Post {
         this.member = member;
     }
     @Builder
-    public Post(String title, String content, LocalDateTime createdAt, Member member) {
+    public Post(String title, String content, LocalDateTime createdAt, Member member, List<String> keyword) {
         this.title = title;
         this.content = content;
         this.member = member;
@@ -77,8 +82,6 @@ public class Post {
         this.content = content;
         this.member = member;
     }
-
-
 
     // 게시글 수정 메서드
     public void update(String title, String content, String imagePath) {
