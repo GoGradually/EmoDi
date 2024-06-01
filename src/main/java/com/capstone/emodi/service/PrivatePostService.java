@@ -1,9 +1,8 @@
 package com.capstone.emodi.service;
 
-import com.capstone.emodi.domain.keyword.Keyword;
 import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.privateKeyword.PrivateKeyword;
-import com.capstone.emodi.domain.privateKeyword.PrivateKeywordRepository;
+import com.capstone.emodi.domain.privatekeyword.PrivateKeyword;
+import com.capstone.emodi.domain.privatekeyword.PrivateKeywordRepository;
 import com.capstone.emodi.domain.privatepost.PrivatePost;
 import com.capstone.emodi.domain.privatepost.PrivatePostRepository;
 import com.capstone.emodi.exception.FileUploadException;

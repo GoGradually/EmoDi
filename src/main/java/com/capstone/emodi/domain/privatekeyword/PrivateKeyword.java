@@ -1,6 +1,5 @@
-package com.capstone.emodi.domain.privateKeyword;
+package com.capstone.emodi.domain.privatekeyword;
 
-import com.capstone.emodi.domain.post.Post;
 import com.capstone.emodi.domain.privatepost.PrivatePost;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -15,12 +14,12 @@ public class PrivateKeyword {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "private_post_id")
-    private PrivatePost post;
+    private PrivatePost privatePost;
 
     private String keywordTag;
 
     public PrivateKeyword(PrivatePost post, String keywordTag){
-        this.post = post;
+        this.privatePost = post;
         this.keywordTag = keywordTag;
     }
 
