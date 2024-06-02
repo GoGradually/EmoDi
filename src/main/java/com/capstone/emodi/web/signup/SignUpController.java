@@ -26,11 +26,11 @@ public class SignUpController {
     private final SignUpService signUpService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<SignupDto>> signup(@RequestBody @Valid SignupRequest signupRequest) {
+    public ResponseEntity<ApiResponse<SignupDto>> signup(@Valid @RequestBody SignupRequest signupRequest) {
         try {
             Map<String, String> tokens = signUpService.signUp(signupRequest);
-            SignupDto SignupDto = new SignupDto("회원가입이 완료되었습니다.", tokens.get("accessToken"), tokens.get("refreshToken"));
-            return ResponseEntity.ok(ApiResponse.success("회원가입 성공", SignupDto));
+            SignupDto signupDto = new SignupDto("회원가입이 완료되었습니다.", tokens.get("accessToken"), tokens.get("refreshToken"));
+            return ResponseEntity.ok(ApiResponse.success("회원가입 성공", signupDto));
         } catch (DuplicateMemberException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(ApiResponse.error(e.getMessage()));
         }

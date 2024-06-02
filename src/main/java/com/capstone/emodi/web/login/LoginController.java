@@ -21,7 +21,7 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginDto>> login(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<ApiResponse<LoginDto>> login(@Valid @RequestBody LoginRequest loginRequest) {
         try {
             Map<String, String> tokens = loginService.login(loginRequest.getLoginId(), loginRequest.getPassword());
             LoginDto LoginDto = new LoginDto("로그인 성공", tokens.get("accessToken"), tokens.get("refreshToken"));
