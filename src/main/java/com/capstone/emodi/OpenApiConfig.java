@@ -1,5 +1,7 @@
 package com.capstone.emodi;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.servers.Server;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +11,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 
+@OpenAPIDefinition(servers = {@Server(url = "https://emo-di.com", description = "AI 감정인식 다이어리")})
 @Configuration
 public class OpenApiConfig {
     /**
