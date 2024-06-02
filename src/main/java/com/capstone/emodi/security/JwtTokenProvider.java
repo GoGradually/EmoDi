@@ -93,6 +93,6 @@ public class JwtTokenProvider {
     }
 
     public boolean isRefreshTokenValid(String refreshToken) {
-        return logoutTokenRepository.isLoggedOut(refreshToken);
+        return !logoutTokenRepository.isLoggedOut(refreshToken);
     }
 }
