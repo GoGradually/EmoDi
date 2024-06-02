@@ -7,12 +7,8 @@ import lombok.Data;
 @Schema
 public class SignupDto {
     private String message;
-    private String accessToken;
-    private String refreshToken;
 
-    public SignupDto(String message, String accessToken, String refreshToken) {
+    public SignupDto(String message) {
         this.message = message;
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
     }
 }

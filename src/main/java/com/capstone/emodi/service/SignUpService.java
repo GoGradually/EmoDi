@@ -31,7 +31,7 @@ public class SignUpService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public Map<String, String> signUp(SignUpController.SignupRequest signupRequest) {
+    public void signUp(SignUpController.SignupRequest signupRequest) {
         // 회원 정보 저장
         String profileImageUrl = "/images/default-profile.jpg";
 
@@ -46,15 +46,6 @@ public class SignUpService {
 
         memberService.join(member);
 
-        // 토큰 발급
-        String accessToken = jwtTokenProvider.generateAccessToken(member.getLoginId());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(member.getLoginId());
-
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("accessToken", accessToken);
-        tokens.put("refreshToken", refreshToken);
-
-        return tokens;
     }
 
 
