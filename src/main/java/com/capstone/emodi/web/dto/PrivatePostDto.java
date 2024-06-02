@@ -16,7 +16,7 @@ public class PrivatePostDto{
     private String content;
     private String imagePath;
     private LocalDateTime createdAt;
-    private List<PrivateKeyword> keywordList;
+    private List<PrivateKeywordDto> keywordList;
 
     public PrivatePostDto(PrivatePost post) {
         this.id = post.getId();
@@ -24,6 +24,6 @@ public class PrivatePostDto{
         this.content = post.getContent();
         this.imagePath = post.getImagePath();
         this.createdAt = post.getCreatedAt();
-        this.keywordList = post.getKeyword();
+        post.getKeyword().stream().map(keyword -> this.keywordList.add(new PrivateKeywordDto(keyword)));
     }
 }
