@@ -28,7 +28,7 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION_MS);
 
-        return Jwts.builder()
+        return "Bearer " + Jwts.builder()
                 .setSubject(loginId)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
