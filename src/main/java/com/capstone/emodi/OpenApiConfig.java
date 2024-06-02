@@ -11,7 +11,7 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 
-//@OpenAPIDefinition(servers = {@Server(url = "https://emo-di.com", description = "AI 감정인식 다이어리")})
+@OpenAPIDefinition(servers = {@Server(url = "https://emo-di.com", description = "AI 감정인식 다이어리")})
 @Configuration
 public class OpenApiConfig {
     /**
