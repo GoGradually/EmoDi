@@ -25,6 +25,6 @@ public class PostDto {
         this.imagePath = post.getImagePath();
         this.memberLoginId = post.getMember().getLoginId();
         this.createdAt = post.getCreatedAt();
-        post.getKeyword().stream().map(keyword -> this.keywordList.add(new KeywordDto(keyword)));
+        post.getKeyword().forEach(keyword -> this.keywordList.add(new KeywordDto(keyword)));
     }
 }

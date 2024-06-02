@@ -24,6 +24,6 @@ public class PrivatePostDto{
         this.content = post.getContent();
         this.imagePath = post.getImagePath();
         this.createdAt = post.getCreatedAt();
-        post.getKeyword().stream().map(keyword -> this.keywordList.add(new PrivateKeywordDto(keyword)));
+        post.getKeyword().forEach(keyword -> this.keywordList.add(new PrivateKeywordDto(keyword)));
     }
 }
