@@ -56,8 +56,6 @@ public class SignUpController {
 
         @NotBlank
         private String tellNumber;
-
-        private String profileImage;
     }
 
 
