@@ -2,7 +2,9 @@ package com.capstone.emodi.web.auth;
 
 import com.capstone.emodi.exception.InvalidTokenException;
 import com.capstone.emodi.security.JwtTokenProvider;
+import com.capstone.emodi.web.dto.RefreshTokenDto;
 import com.capstone.emodi.web.response.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -20,13 +22,13 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+    public ResponseEntity<ApiResponse<RefreshTokenDto>> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         String refreshToken = refreshTokenRequest.getRefreshToken();
         try {
             if (jwtTokenProvider.validateRefreshToken(refreshToken) && jwtTokenProvider.isRefreshTokenValid(refreshToken)) {
                 String loginId = jwtTokenProvider.getLoginIdFromToken(refreshToken);
                 String newAccessToken = jwtTokenProvider.generateAccessToken(loginId);
-                return ResponseEntity.ok(new RefreshTokenResponse(newAccessToken));
+                return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("success", new RefreshTokenDto(newAccessToken)));
             } else {
                 throw new InvalidTokenException("Invalid or expired refresh token");
             }
@@ -57,13 +59,4 @@ public class AuthController {
         private String refreshToken;
     }
 
-    @Getter
-    @Setter
-    private static class RefreshTokenResponse {
-        private String accessToken;
-
-        public RefreshTokenResponse(String accessToken) {
-            this.accessToken = accessToken;
-        }
-    }
 }
