@@ -79,7 +79,7 @@ public class MemberController {
             @RequestParam String loginId){
         accessToken = accessToken.substring(7);
         String userId = jwtTokenProvider.getLoginIdFromToken(accessToken);
-        Member user = memberService.findByLoginId(loginId);
+        Member user = memberService.findByLoginId(userId);
         List<MemberDto> membersResponse = new ArrayList<>();
         memberService.searchByLoginId(loginId).forEach(m -> membersResponse.add(new MemberDto(m, friendshipService.existFriendship(user.getId(), m.getId()))));
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 리스트 조회", membersResponse));
