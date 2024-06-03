@@ -28,28 +28,32 @@ public class ImageController {
     private String privatePostImageDir;
 
     @GetMapping("/profile/{filename}")
-    public ResponseEntity<Resource> downloadProfileImage(@PathVariable String filename) throws
+    public ResponseEntity<Hyperlink> downloadProfileImage(@PathVariable String filename) throws
             IOException {
-        String mimeType = Files.probeContentType(Paths.get(profileImageDir, filename));
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(mimeType))
-                .body(new UrlResource("file:" +profileImageDir + "/" + filename));
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new Hyperlink("https://emo-di.com/profileImages/"+ filename));
     }
     @GetMapping("/post/{filename}")
-    public ResponseEntity<Resource> downloadPostImage(@PathVariable String filename) throws
+    public ResponseEntity<Hyperlink> downloadPostImage(@PathVariable String filename) throws
             IOException {
-        String mimeType = Files.probeContentType(Paths.get(postImageDir, filename));
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(mimeType))
-                .body(new UrlResource("file:" +postImageDir + "/" + filename));
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new Hyperlink("https://emo-di.com/fileStorage/"+ filename));
     }
 
     @GetMapping("/privatePost/{filename}")
-    public ResponseEntity<Resource> downloadPrivatePostImage(@PathVariable String filename) throws
+    public ResponseEntity<Hyperlink> downloadPrivatePostImage(@PathVariable String filename) throws
             IOException {
-        String mimeType = Files.probeContentType(Paths.get(privatePostImageDir, filename));
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(mimeType))
-                .body(new UrlResource("file:" +privatePostImageDir + "/" + filename));
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new Hyperlink("https://emo-di.com/fileStorage/"+ filename));
+    }
+    public static class Hyperlink{
+        private String imageUrl;
+
+        public Hyperlink(String url){
+            this.imageUrl = url;
+        }
     }
 }
