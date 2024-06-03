@@ -12,6 +12,7 @@ public class MemberDto {
     private String username;
     private String email;
     private String tellNumber;
+    private String profileImage;
 
     public MemberDto(Member member) {
         this.id = member.getId();
@@ -19,6 +20,7 @@ public class MemberDto {
         this.username = member.getUsername();
         this.email = member.getEmail();
         this.tellNumber = member.getTellNumber();
+        this.profileImage = member.getProfileImage();
     }
 
     // Getter 메서드 생략
