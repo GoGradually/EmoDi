@@ -12,7 +12,7 @@ public class MemberDto {
     private String username;
     private String email;
     private String tellNumber;
-    private String profileImage;
+    private String imageUrl;
     private int postNum;
     private Long followingNum;
     private Long followerNum;
@@ -24,7 +24,7 @@ public class MemberDto {
         this.username = member.getUsername();
         this.email = member.getEmail();
         this.tellNumber = member.getTellNumber();
-        this.profileImage = member.getProfileImage();
+        this.imageUrl = member.getImageUrl();
         this.postNum = member.getPosts().size();
         this.followingNum = member.getFollowingNum();
         this.followerNum = member.getFollowerNum();

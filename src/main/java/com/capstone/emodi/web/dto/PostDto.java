@@ -14,7 +14,7 @@ public class PostDto {
     private String title;
     private String content;
     private int likeCount;
-    private String imagePath;
+    private String imageUrl;
     private String memberLoginId;
     private LocalDateTime createdAt;
     private List<KeywordDto> keywordList;
@@ -22,7 +22,7 @@ public class PostDto {
         this.title = post.getTitle();
         this.content = post.getContent();
         this.likeCount = post.getLikeCount();
-        this.imagePath = post.getImagePath();
+        this.imageUrl = post.getImageUrl();
         this.memberLoginId = post.getMember().getLoginId();
         this.createdAt = post.getCreatedAt();
         post.getKeyword().forEach(keyword -> this.keywordList.add(new KeywordDto(keyword)));

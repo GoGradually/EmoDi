@@ -14,7 +14,7 @@ public class PrivatePostDto{
     private Long id;
     private String title;
     private String content;
-    private String imagePath;
+    private String imageUrl;
     private LocalDateTime createdAt;
     private List<PrivateKeywordDto> keywordList;
 
@@ -22,7 +22,7 @@ public class PrivatePostDto{
         this.id = post.getId();
         this.title = post.getTitle();
         this.content = post.getContent();
-        this.imagePath = post.getImagePath();
+        this.imageUrl = post.getImageUrl();
         this.createdAt = post.getCreatedAt();
         post.getKeyword().forEach(keyword -> this.keywordList.add(new PrivateKeywordDto(keyword)));
     }
