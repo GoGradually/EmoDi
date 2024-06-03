@@ -83,4 +83,8 @@ public class PrivatePost {
         this.content = content;
         this.imagePath = imagePath;
     }
+
+    public String getImageUrl(){
+        return "https://emo-di.com/privateFileStorage/" + imagePath;
+    }
 }

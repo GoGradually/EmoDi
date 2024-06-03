@@ -96,4 +96,7 @@ public class Member {
     public void subFollower(){
         this.followerNum -= 1;
     }
+    public String getImageUrl(){
+        return "https://emo-di.com/profileImages/" + profileImage;
+    }
 }

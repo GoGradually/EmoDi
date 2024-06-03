@@ -89,5 +89,7 @@ public class Post {
         this.content = content;
         this.imagePath = imagePath;
     }
-
+    public String getImageUrl(){
+        return "https://emo-di.com/fileStorage/" + imagePath;
+    }
 }
