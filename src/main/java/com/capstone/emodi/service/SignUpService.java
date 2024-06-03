@@ -5,6 +5,7 @@ import com.capstone.emodi.domain.member.MemberRepository;
 import com.capstone.emodi.utils.FileUploadUtil;
 import com.capstone.emodi.web.signup.SignUpController;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class SignUpService {
 
     public void signUp(SignUpController.SignupRequest signupRequest) {
         // 회원 정보 저장
-        String profileImageUrl = "/images/default-profile.jpg";
+        String profileImageUrl = "default-profile.jpg";
 
         Member member = Member.builder()
                 .loginId(signupRequest.getLoginId())

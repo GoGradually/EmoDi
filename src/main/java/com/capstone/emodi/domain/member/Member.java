@@ -53,7 +53,7 @@ public class Member {
     private List<PrivatePost> privatePosts = new ArrayList<>();
 
     @Column(nullable = true)
-    private String profileImage = "/images/default-profile.jpg";
+    private String profileImage = "default-profile.jpg";
 
     @Builder
     public Member(String loginId, String username, String password, String email, String tellNumber, String profileImage) {

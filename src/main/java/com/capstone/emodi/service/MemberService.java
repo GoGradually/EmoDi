@@ -81,7 +81,7 @@ public class MemberService {
             // 프로필 이미지가 제공되지 않은 경우, 기존 이미지 유지
             if (member.getProfileImage() == null || member.getProfileImage().isEmpty()) {
                 // 기존 이미지가 없는 경우, 기본 이미지 설정
-                member.changeProfileImage("/images/default-profile.jpg");
+                member.changeProfileImage("default-profile.jpg");
             }
         }
 
