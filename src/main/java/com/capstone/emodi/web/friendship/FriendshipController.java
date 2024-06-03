@@ -37,7 +37,7 @@ public class FriendshipController {
     @GetMapping("/{memberId}")
     public ResponseEntity<ApiResponse<List<MemberDto>>> getFriends(@PathVariable Long memberId) {
         List<Member> friends = friendshipService.getFriends(memberId);
-        List<MemberDto> response = friends.stream().map(MemberDto::new).collect(Collectors.toList());
+        List<MemberDto> response = friends.stream().map(m -> new MemberDto(m, true)).collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.success("친구 목록 조회 성공", response));
     }
 }
