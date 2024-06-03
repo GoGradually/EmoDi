@@ -1,6 +1,7 @@
 package com.capstone.emodi.web.login;
 
 import com.capstone.emodi.service.LoginService;
+import com.capstone.emodi.service.MemberService;
 import com.capstone.emodi.web.dto.LoginDto;
 import com.capstone.emodi.web.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -19,12 +20,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LoginController {
     private final LoginService loginService;
-
+    private final MemberService memberService;
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginDto>> login(@Valid @RequestBody LoginRequest loginRequest) {
         try {
             Map<String, String> tokens = loginService.login(loginRequest.getLoginId(), loginRequest.getPassword());
-            LoginDto LoginDto = new LoginDto("로그인 성공", tokens.get("accessToken"), tokens.get("refreshToken"));
+            LoginDto LoginDto = new LoginDto("로그인 성공", memberService.findByLoginId(loginRequest.getLoginId()),tokens.get("accessToken"), tokens.get("refreshToken"));
             return ResponseEntity.ok(ApiResponse.success("로그인 성공", LoginDto));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse.error(e.getMessage()));
