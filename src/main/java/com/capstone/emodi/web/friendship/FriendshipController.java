@@ -40,6 +40,4 @@ public class FriendshipController {
         List<MemberDto> response = friends.stream().map(MemberDto::new).collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.success("친구 목록 조회 성공", response));
     }
-
-
 }
