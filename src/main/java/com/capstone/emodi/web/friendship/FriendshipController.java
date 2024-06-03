@@ -1,12 +1,15 @@
 package com.capstone.emodi.web.friendship;
 
 import com.capstone.emodi.domain.friendship.Friendship;
+import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.service.FriendshipService;
 import com.capstone.emodi.web.dto.FriendshipDto;
+import com.capstone.emodi.web.dto.MemberDto;
 import com.capstone.emodi.web.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,11 +35,9 @@ public class FriendshipController {
     }
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<List<FriendshipDto>>> getFriends(@PathVariable Long memberId) {
-        List<Friendship> friends = friendshipService.getFriends(memberId);
-        List<FriendshipDto> response = friends.stream()
-                .map(friendship -> new FriendshipDto(friendship.getMember().getId(), friendship.getFriend().getId()))
-                .collect(Collectors.toList());
+    public ResponseEntity<ApiResponse<List<MemberDto>>> getFriends(@PathVariable Long memberId) {
+        List<Member> friends = friendshipService.getFriends(memberId);
+        List<MemberDto> response = friends.stream().map(MemberDto::new).collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.success("친구 목록 조회 성공", response));
     }
 
