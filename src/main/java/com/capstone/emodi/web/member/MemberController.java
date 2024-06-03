@@ -63,7 +63,7 @@ public class MemberController {
     }
 
     // 회원 조회
-    @GetMapping("/search")
+    @GetMapping("/member/search")
     public ResponseEntity<ApiResponse<List<MemberDto>>> getMemberList(@RequestParam String loginId){
         List<MemberDto> membersResponse = new ArrayList<>();
         memberService.searchByLoginId(loginId).forEach(m -> membersResponse.add(new MemberDto(m)));
