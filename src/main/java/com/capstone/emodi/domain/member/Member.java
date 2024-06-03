@@ -10,7 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(uniqueConstraints = {
+@Table(
+        indexes = {
+                @Index(name="idx_login_id", columnList = "loginId")
+        },
+        uniqueConstraints = {
         @UniqueConstraint(columnNames = "loginId"),
         @UniqueConstraint(columnNames = "email")
 })
@@ -23,7 +27,7 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false,unique = true, length = 20)
     private String loginId;
 
     @Column(nullable = false, length = 20)
