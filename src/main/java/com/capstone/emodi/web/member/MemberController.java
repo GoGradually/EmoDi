@@ -3,6 +3,7 @@ package com.capstone.emodi.web.member;
 import com.capstone.emodi.domain.member.Member;
 import com.capstone.emodi.exception.MemberNotFoundException;
 import com.capstone.emodi.security.JwtTokenProvider;
+import com.capstone.emodi.service.FriendshipService;
 import com.capstone.emodi.service.MemberService;
 import com.capstone.emodi.web.dto.MemberDto;
 import com.capstone.emodi.web.response.ApiResponse;
@@ -21,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final FriendshipService friendshipService;
     private final JwtTokenProvider jwtTokenProvider;
 
 
@@ -35,7 +37,7 @@ public class MemberController {
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
 
         Member updatedMember = memberService.updateMemberPassword(memberId, passwordUpdateRequest.getPassword());
-        MemberDto memberResponse = new MemberDto(updatedMember);
+        MemberDto memberResponse = new MemberDto(updatedMember, false);
         return ResponseEntity.ok(ApiResponse.success("회원 비밀번호 수정 성공", memberResponse));
 
     }
@@ -50,23 +52,36 @@ public class MemberController {
         ResponseEntity<ApiResponse<MemberDto>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
         Member updatedMember = memberService.updateMemberProfileImage(memberId, profileImage);
-        MemberDto memberResponse = new MemberDto(updatedMember);
+        MemberDto memberResponse = new MemberDto(updatedMember, false);
         return ResponseEntity.ok(ApiResponse.success("회원 프로필 이미지 변경 성공", memberResponse));
     }
 
     //회원 정보 조회
     @GetMapping("/{memberId}/info")
-    public ResponseEntity<ApiResponse<MemberDto>> getMemberInfo(@PathVariable Long memberId){
+    public ResponseEntity<ApiResponse<MemberDto>> getMemberInfo(
+            @RequestHeader (HttpHeaders.AUTHORIZATION) String accessToken,
+            @PathVariable Long memberId
+    ){
         Member member = memberService.findById(memberId);
-        MemberDto memberResponse = new MemberDto(member);
+        accessToken = accessToken.substring(7);
+        String userId = jwtTokenProvider.getLoginIdFromToken(accessToken);
+        Member user = memberService.findByLoginId(userId);
+        boolean isFriend = friendshipService.existFriendship(user.getId(), member.getId());
+
+        MemberDto memberResponse = new MemberDto(member, isFriend);
         return ResponseEntity.ok(ApiResponse.success("사용자 조회 성공", memberResponse));
     }
 
     // 회원 조회
     @GetMapping("/member/search")
-    public ResponseEntity<ApiResponse<List<MemberDto>>> getMemberList(@RequestParam String loginId){
+    public ResponseEntity<ApiResponse<List<MemberDto>>> getMemberList(
+            @RequestHeader (HttpHeaders.AUTHORIZATION) String accessToken,
+            @RequestParam String loginId){
+        accessToken = accessToken.substring(7);
+        String userId = jwtTokenProvider.getLoginIdFromToken(accessToken);
+        Member user = memberService.findByLoginId(loginId);
         List<MemberDto> membersResponse = new ArrayList<>();
-        memberService.searchByLoginId(loginId).forEach(m -> membersResponse.add(new MemberDto(m)));
+        memberService.searchByLoginId(loginId).forEach(m -> membersResponse.add(new MemberDto(m, friendshipService.existFriendship(user.getId(), m.getId()))));
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 리스트 조회", membersResponse));
     }
 

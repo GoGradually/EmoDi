@@ -55,6 +55,8 @@ public class Member {
     @Column(nullable = true)
     private String profileImage = "default-profile.jpg";
 
+    private Long followingNum = 0L;
+    private Long followerNum = 0L;
     @Builder
     public Member(String loginId, String username, String password, String email, String tellNumber, String profileImage) {
         this.loginId = loginId;
@@ -81,5 +83,17 @@ public class Member {
     // 의미 있는 메서드 추가
     public void changePassword(String newPassword) {
         this.password = newPassword;
+    }
+    public void addFollowing(){
+        this.followingNum += 1;
+    }
+    public void addFollower(){
+        this.followerNum += 1;
+    }
+    public void subFollowing(){
+        this.followingNum -= 1;
+    }
+    public void subFollower(){
+        this.followerNum -= 1;
     }
 }

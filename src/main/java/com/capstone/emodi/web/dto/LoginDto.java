@@ -16,7 +16,7 @@ public class LoginDto {
 
     public LoginDto(String message, Member member, String accessToken, String refreshToken) {
         this.message = message;
-        this.memberDto = new MemberDto(member);
+        this.memberDto = new MemberDto(member, false);
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }

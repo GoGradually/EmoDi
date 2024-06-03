@@ -29,6 +29,8 @@ public class FriendshipService {
             throw new IllegalStateException("Already friends");
         }
         Friendship friendship = new Friendship(member, friend);
+        member.addFollowing();
+        friend.addFollower();
         friendshipRepository.save(friendship);
     }
 
@@ -37,13 +39,20 @@ public class FriendshipService {
             throw new IllegalStateException("Not friends yet");
         }
         friendshipRepository.deleteByMemberIdAndFriendId(memberId, friendId);
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
+        Member friend = memberRepository.findById(friendId).orElseThrow(() -> new IllegalArgumentException("Invalid friend ID"));
+        member.subFollowing();
+        friend.subFollower();
     }
 
     public List<Member> getFriends(Long memberId) {
-        List<Friendship> frindships = friendshipRepository.findByMemberId(memberId);
+        List<Friendship> friendships = friendshipRepository.findByMemberId(memberId);
         List<Member> members = new ArrayList<>();
-        frindships.forEach(s -> members.add(s.getFriend()));
+        friendships.forEach(s -> members.add(s.getFriend()));
         return members;
+    }
+    public boolean existFriendship(Long memberId, Long friendId){
+        return friendshipRepository.existsByMemberIdAndFriendId(memberId, friendId);
     }
 }
 
