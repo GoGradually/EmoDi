@@ -25,14 +25,16 @@ public class PrivatePostService {
     private final PrivatePostRepository privatePostRepository;
     private final PrivateKeywordRepository privateKeywordRepository;
     // 게시글 작성
-    public PrivatePost createPrivatePost(String title, String content, MultipartFile image, Member member, List<String> keywordString) {
+    public PrivatePost createPrivatePost(String title, String content, byte[] imageBytes, Member member, List<String> keywordString) {
         String imagePath = null;
-        if (image != null) {
+        if (imageBytes.length != 0) {
             try {
-                imagePath = saveImage(image);
+                imagePath = saveImage(imageBytes);
             } catch (IOException e) {
                 throw new FileUploadException("이미지 파일 업로드 중 오류가 발생했습니다.");
             }
+        } else {
+            imagePath = "default-profile.jpg";
         }
         PrivatePost privatePost = PrivatePost.builder()
                 .title(title)
@@ -47,15 +49,17 @@ public class PrivatePostService {
     }
 
     // 게시글 수정
-    public PrivatePost updatePrivatePost(Long privatePostId, String title, String content, MultipartFile image, List<String> keywordString) {
+    public PrivatePost updatePrivatePost(Long privatePostId, String title, String content, byte[] imageBytes, List<String> keywordString) {
 
         String imagePath = null;
-        if (image != null) {
+        if (imageBytes.length != 0) {
             try {
-                imagePath = saveImage(image);
+                imagePath = saveImage(imageBytes);
             } catch (IOException e) {
                 throw new FileUploadException("이미지 파일 업로드 중 오류가 발생했습니다.");
             }
+        }else {
+            imagePath = "default-profile.jpg";
         }
         PrivatePost privatePost = privatePostRepository.findById(privatePostId)
                 .orElseThrow(() -> new PostNotFoundException("해당 게시글이 없습니다. id=" + privatePostId));
@@ -112,10 +116,10 @@ public class PrivatePostService {
         return privatePostRepository.findByMemberIdAndCreatedAtBetween(memberId, startOfDay, endOfDay);
     }
     // 이미지 저장 메서드
-    private String saveImage(MultipartFile image) throws IOException {
+    private String saveImage(byte[] imageBytes) throws IOException {
         String uploadDir = "uploads";
         try {
-            return FileUploadUtil.saveImage(image, uploadDir);
+            return FileUploadUtil.saveImage(imageBytes, uploadDir);
         } catch (IOException e) {
             // 파일 저장 실패 시 예외 처리
             throw new RuntimeException("Failed to save image", e);

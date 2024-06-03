@@ -34,13 +34,13 @@ public class PrivatePostController {
     // 게시글 작성
     @PostMapping
     public ResponseEntity<ApiResponse<PrivatePostDto>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                                        @RequestBody PostString postString,
-                                                        @RequestParam(required = false) MultipartFile image) {
+                                                        @RequestBody PostString postString) {
         token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
 
         String title = postString.title;
         String content = postString.content;
+        byte[] imageBytes = postString.imageBytes;
         Member member;
         List<String> keywords = new ArrayList<>(postString.keyword);
         try{
@@ -57,7 +57,7 @@ public class PrivatePostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("제목 또는 내용이 비어 있습니다."));
         }
         try {
-            PrivatePost privatePost = privatePostService.createPrivatePost(title, content, image, member, keywords);
+            PrivatePost privatePost = privatePostService.createPrivatePost(title, content, imageBytes, member, keywords);
             PrivatePostDto retPost = new PrivatePostDto(privatePost);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 생성 성공",retPost));
         } catch (FileUploadException e) {
@@ -69,14 +69,15 @@ public class PrivatePostController {
     @PutMapping("/{postId}")
     public ResponseEntity<ApiResponse<PrivatePostDto>> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                                                   @PathVariable Long postId,
-                                                                  @RequestBody PostString postString,
-                                                                  @RequestParam (required = false) MultipartFile image) {
+                                                                  @RequestBody PostString postString
+    ) {
 
         token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
 
         String title = postString.title;
         String content = postString.content;
+        byte[] imageBytes = postString.imageBytes;
         Member member;
         List<String> keywords = new ArrayList<>(postString.keyword);
         try{
@@ -94,7 +95,7 @@ public class PrivatePostController {
         }
 
         try {
-            PrivatePost privatePost = privatePostService.updatePrivatePost(postId, title, content, image, keywords);
+            PrivatePost privatePost = privatePostService.updatePrivatePost(postId, title, content, imageBytes, keywords);
             PrivatePostDto retPost = new PrivatePostDto(privatePost);
             return ResponseEntity.ok(ApiResponse.success("게시글 업데이트 성공",retPost));
         } catch (FileUploadException e) {
@@ -160,6 +161,7 @@ public class PrivatePostController {
         public String title;
         public String content;
         public List<String> keyword;
+        public byte[] imageBytes;
     }
 
 

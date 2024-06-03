@@ -38,13 +38,13 @@ public class PostController {
     // 게시글 작성
     @PostMapping
     public ResponseEntity<ApiResponse<PostDto>> createPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                                           @RequestBody PostString postString,
-                                                           @RequestParam(required = false) MultipartFile image) {
+                                                           @RequestBody PostString postString) {
         token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
 
         String title = postString.title;
         String content = postString.content;
+        byte[] imageBytes = postString.imageBytes;
         Member member;
         List<String> keywords = new ArrayList<>(postString.keyword);
         try{
@@ -61,7 +61,7 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("제목 또는 내용이 비어 있습니다."));
         }
         try {
-            Post post = postService.createPost(title, content, image, member, keywords);
+            Post post = postService.createPost(title, content, imageBytes, member, keywords);
             return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("게시글 생성 성공",new PostDto(post)));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
@@ -72,11 +72,11 @@ public class PostController {
     @PutMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostDto>> updatePost(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                                            @PathVariable Long postId,
-                                                           @RequestBody PostString postString,
-                                                           @RequestParam (required = false) MultipartFile image) {
+                                                           @RequestBody PostString postString) {
 
         token = token.substring(7);
         String loginId = jwtTokenProvider.getLoginIdFromToken(token);
+        byte[] imageBytes = postString.imageBytes;
 
         String title = postString.title;
         String content = postString.content;
@@ -96,7 +96,7 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("제목 또는 내용이 비어 있습니다."));
         }
         try {
-            Post post = postService.updatePost(postId, title, content, image, keywords);
+            Post post = postService.updatePost(postId, title, content, imageBytes, keywords);
             return ResponseEntity.ok(ApiResponse.success("게시글 업데이트 성공",new PostDto(post)));
         } catch (FileUploadException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiResponse.error(e.getMessage()));
@@ -162,6 +162,7 @@ public class PostController {
         public String title;
         public String content;
         public List<String> keyword;
+        public byte[] imageBytes;
     }
 
 

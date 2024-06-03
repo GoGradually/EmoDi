@@ -47,11 +47,11 @@ public class MemberController {
     public ResponseEntity<ApiResponse<MemberDto>> updateMemberProfileImage(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken,
             @PathVariable Long memberId,
-            @RequestParam(value = "profileImage") MultipartFile profileImage) {
+            @RequestBody byte[] imageBytes) {
         accessToken = accessToken.substring(7);
         ResponseEntity<ApiResponse<MemberDto>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
-        Member updatedMember = memberService.updateMemberProfileImage(memberId, profileImage);
+        Member updatedMember = memberService.updateMemberProfileImage(memberId, imageBytes);
         MemberDto memberResponse = new MemberDto(updatedMember, false);
         return ResponseEntity.ok(ApiResponse.success("회원 프로필 이미지 변경 성공", memberResponse));
     }

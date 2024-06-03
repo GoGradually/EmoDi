@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -69,22 +68,15 @@ public class MemberService {
     }
 
     // 회원 프로필 이미지 변경
-    public Member updateMemberProfileImage(Long memberId, MultipartFile image){
+    public Member updateMemberProfileImage(Long memberId, byte[] imageBytes){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("해당 회원이 없습니다. id=" + memberId));
         // 프로필 이미지가 제공된 경우
-        if (image != null && !image.isEmpty() && !image.getName().equals("defalut-profile.jpg")) {
+        if (imageBytes.length != 0) {
             // 새로운 프로필 이미지 저장
-            String profileImageUrl = saveProfileImage(image);
+            String profileImageUrl = saveProfileImage(imageBytes);
             member.changeProfileImage(profileImageUrl);
-        } else {
-            // 프로필 이미지가 제공되지 않은 경우, 기존 이미지 유지
-            if (member.getProfileImage() == null || member.getProfileImage().isEmpty()) {
-                // 기존 이미지가 없는 경우, 기본 이미지 설정
-                member.changeProfileImage("default-profile.jpg");
-            }
         }
-
         return member;
     }
 
@@ -96,9 +88,9 @@ public class MemberService {
         memberRepository.delete(member);
     }
 
-    private String saveProfileImage(MultipartFile profileImage) {
+    private String saveProfileImage(byte[] imageBytes) {
         try {
-            return FileUploadUtil.saveImage(profileImage, uploadDir);
+            return FileUploadUtil.saveImage(imageBytes ,uploadDir);
         } catch (IOException e) {
             // 파일 저장 실패 시 예외 처리
             throw new RuntimeException("Failed to save profile image", e);
