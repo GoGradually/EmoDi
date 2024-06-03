@@ -1,5 +1,6 @@
 package com.capstone.emodi.web.dto;
 
+import com.capstone.emodi.domain.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.Getter;
@@ -11,9 +12,11 @@ public class LoginDto {
     private String message;
     private String accessToken;
     private String refreshToken;
+    private MemberDto memberDto;
 
-    public LoginDto(String message, String accessToken, String refreshToken) {
+    public LoginDto(String message, Member member, String accessToken, String refreshToken) {
         this.message = message;
+        this.memberDto = new MemberDto(member);
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
