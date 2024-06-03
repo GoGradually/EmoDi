@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @Transactional
@@ -52,6 +53,11 @@ public class MemberService {
     public Member findByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new MemberNotFoundException("해당 로그인 ID의 회원이 없습니다."));
+    }
+
+    // 로그인 ID로 여러 회원 조회
+    public List<Member> searchByLoginId(String loginId){
+        return memberRepository.searchByLoginId(loginId);
     }
 
     // 회원 비밀번호 수정

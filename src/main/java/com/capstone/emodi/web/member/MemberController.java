@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -58,9 +61,15 @@ public class MemberController {
         MemberDto memberResponse = new MemberDto(member);
         return ResponseEntity.ok(ApiResponse.success("사용자 조회 성공", memberResponse));
     }
-    //회원 프로필 이미지 조회
 
-    // DTO 클래스
+    // 회원 조회
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<MemberDto>>> getMemberList(@RequestParam String loginId){
+        List<MemberDto> membersResponse = new ArrayList<>();
+        memberService.searchByLoginId(loginId).forEach(m -> membersResponse.add(new MemberDto(m)));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("사용자 리스트 조회", membersResponse));
+    }
+
 
 
     static class PasswordUpdateRequest {
