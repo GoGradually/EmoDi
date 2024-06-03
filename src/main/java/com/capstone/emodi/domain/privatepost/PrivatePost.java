@@ -85,6 +85,6 @@ public class PrivatePost {
     }
 
     public String getImageUrl(){
-        return "https://emo-di.com/privateFileStorage/" + imagePath;
+        return "https://emo-di.com/privateImages/" + imagePath;
     }
 }

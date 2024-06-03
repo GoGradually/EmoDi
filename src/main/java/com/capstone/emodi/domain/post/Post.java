@@ -90,6 +90,6 @@ public class Post {
         this.imagePath = imagePath;
     }
     public String getImageUrl(){
-        return "https://emo-di.com/fileStorage/" + imagePath;
+        return "https://emo-di.com/images/" + imagePath;
     }
 }
