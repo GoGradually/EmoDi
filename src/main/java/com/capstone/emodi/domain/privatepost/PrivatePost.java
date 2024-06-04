@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -36,7 +37,7 @@ public class PrivatePost {
 
 
     @OneToMany(mappedBy = "privatePost", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PrivateKeyword> keyword;
+    private List<PrivateKeyword> keyword = new ArrayList<>();
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
