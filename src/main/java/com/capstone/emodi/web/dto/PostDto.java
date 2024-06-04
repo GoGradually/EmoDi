@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,7 +18,7 @@ public class PostDto {
     private String imageUrl;
     private String memberLoginId;
     private LocalDateTime createdAt;
-    private List<KeywordDto> keywordList;
+    private List<KeywordDto> keywordList = new ArrayList<>();
     public PostDto(Post post){
         this.title = post.getTitle();
         this.content = post.getContent();
