@@ -31,7 +31,7 @@ public class SignUpService {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-
+    private final FriendshipService friendshipService;
     public void signUp(SignUpController.SignupRequest signupRequest) {
         // 회원 정보 저장
         String profileImageUrl = "default-image.png";
@@ -46,7 +46,7 @@ public class SignUpService {
                 .build();
 
         memberService.join(member);
-
+        friendshipService.addFriend(member.getId(), member.getId());
     }
 
 

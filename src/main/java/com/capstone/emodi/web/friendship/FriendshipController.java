@@ -6,11 +6,13 @@ import com.capstone.emodi.service.FriendshipService;
 import com.capstone.emodi.web.dto.FriendshipDto;
 import com.capstone.emodi.web.dto.MemberDto;
 import com.capstone.emodi.web.response.ApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -30,6 +32,7 @@ public class FriendshipController {
 
     @DeleteMapping("/{memberId}/remove/{friendId}")
     public ResponseEntity<ApiResponse<Void>> removeFriend(@PathVariable Long memberId, @PathVariable Long friendId) {
+        if(Objects.equals(memberId, friendId)) ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("본인 삭제 불가능"));
         friendshipService.removeFriend(memberId, friendId);
         return ResponseEntity.ok(ApiResponse.success("친구 삭제 성공", null));
     }
