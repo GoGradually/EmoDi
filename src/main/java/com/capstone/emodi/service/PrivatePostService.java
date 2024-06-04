@@ -9,6 +9,7 @@ import com.capstone.emodi.exception.FileUploadException;
 import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.utils.FileUploadUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,9 @@ import java.util.List;
 public class PrivatePostService {
     private final PrivatePostRepository privatePostRepository;
     private final PrivateKeywordRepository privateKeywordRepository;
+
+    @Value("${privatePostImage.dir}")
+    String uploadDir;
     // 게시글 작성
     public PrivatePost createPrivatePost(String title, String content, byte[] imageBytes, Member member, List<String> keywordString) {
         String imagePath = null;
@@ -117,7 +121,6 @@ public class PrivatePostService {
     }
     // 이미지 저장 메서드
     private String saveImage(byte[] imageBytes) throws IOException {
-        String uploadDir = "uploads";
         try {
             return FileUploadUtil.saveImage(imageBytes, uploadDir);
         } catch (IOException e) {
