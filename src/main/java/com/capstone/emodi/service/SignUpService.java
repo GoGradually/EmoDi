@@ -34,7 +34,7 @@ public class SignUpService {
 
     public void signUp(SignUpController.SignupRequest signupRequest) {
         // 회원 정보 저장
-        String profileImageUrl = "default-profile.jpg";
+        String profileImageUrl = "default-image.png";
 
         Member member = Member.builder()
                 .loginId(signupRequest.getLoginId())

@@ -53,7 +53,7 @@ public class Member {
     private List<PrivatePost> privatePosts = new ArrayList<>();
 
     @Column(nullable = true)
-    private String profileImage = "default-profile.jpg";
+    private String profileImage = "default-image.png";
 
     private Long followingNum = 0L;
     private Long followerNum = 0L;

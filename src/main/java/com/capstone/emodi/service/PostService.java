@@ -40,7 +40,7 @@ public class PostService {
                 throw new FileUploadException("이미지 파일 업로드 중 오류가 발생했습니다.");
             }
         } else {
-            imagePath = "default-profile.jpg";
+            imagePath = "default-image.png";
         }
         Post post = Post.builder()
                 .title(title)
@@ -64,7 +64,7 @@ public class PostService {
                 throw new FileUploadException("이미지 파일 업로드 중 오류가 발생했습니다.");
             }
         }else {
-            imagePath = "default-profile.jpg";
+            imagePath = "default-image.png";
         }
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("해당 게시글이 없습니다. id=" + postId));
