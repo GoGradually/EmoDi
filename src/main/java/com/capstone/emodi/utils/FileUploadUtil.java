@@ -32,6 +32,8 @@ public class FileUploadUtil {
         String fullPath = uploadDir + "/" + uniqueFilename;
 
         Path path = Paths.get(fullPath);
+        // 디렉토리 생성 확인 및 생성
+        Files.createDirectories(path.getParent());
         Files.write(path, imageBytes);
         return uniqueFilename;
     }
