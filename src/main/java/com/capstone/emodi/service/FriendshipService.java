@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,6 +23,11 @@ public class FriendshipService {
         this.memberRepository = memberRepository;
     }
 
+    public void selfFollow(Long memberId){
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
+        Friendship friendship = new Friendship(member, member);
+        friendshipRepository.save(friendship);
+    }
     public void addFriend(Long memberId, Long friendId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
         Member friend = memberRepository.findById(friendId).orElseThrow(() -> new IllegalArgumentException("Invalid friend ID"));
@@ -46,10 +52,11 @@ public class FriendshipService {
     }
 
     public List<Member> getFriends(Long memberId) {
-        List<Friendship> friendships = friendshipRepository.findByMemberId(memberId);
-        List<Member> members = new ArrayList<>();
-        friendships.forEach(s -> members.add(s.getFriend()));
-        return members;
+        return friendshipRepository.findByMemberId(memberId)
+                .stream()
+                .map(Friendship::getFriend)
+                .filter(friend -> !friend.getId().equals(memberId))
+                .collect(Collectors.toList());
     }
     public boolean existFriendship(Long memberId, Long friendId){
         return friendshipRepository.existsByMemberIdAndFriendId(memberId, friendId);

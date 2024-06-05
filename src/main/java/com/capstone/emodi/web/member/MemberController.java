@@ -37,7 +37,7 @@ public class MemberController {
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
 
         Member updatedMember = memberService.updateMemberPassword(memberId, passwordUpdateRequest.getPassword());
-        MemberDto memberResponse = new MemberDto(updatedMember, false);
+        MemberDto memberResponse = new MemberDto(updatedMember,  true);
         return ResponseEntity.ok(ApiResponse.success("회원 비밀번호 수정 성공", memberResponse));
 
     }
@@ -52,7 +52,7 @@ public class MemberController {
         ResponseEntity<ApiResponse<MemberDto>> UNAUTHORIZED = getMemberResponseEntity(accessToken, memberId);
         if (UNAUTHORIZED != null) return UNAUTHORIZED;
         Member updatedMember = memberService.updateMemberProfileImage(memberId, imageBytes);
-        MemberDto memberResponse = new MemberDto(updatedMember, false);
+        MemberDto memberResponse = new MemberDto(updatedMember, true);
         return ResponseEntity.ok(ApiResponse.success("회원 프로필 이미지 변경 성공", memberResponse));
     }
 

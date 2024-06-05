@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -56,7 +57,7 @@ public class MemberService {
 
     // 로그인 ID로 여러 회원 조회
     public List<Member> searchByLoginId(String loginId){
-        return memberRepository.searchByLoginId(loginId);
+        return memberRepository.searchByLoginId(loginId).stream().filter(s->!s.getLoginId().equals(loginId)).collect(Collectors.toList());
     }
 
     // 회원 비밀번호 수정
