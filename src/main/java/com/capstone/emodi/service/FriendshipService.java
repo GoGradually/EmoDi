@@ -23,6 +23,11 @@ public class FriendshipService {
         this.memberRepository = memberRepository;
     }
 
+    public void selfFollow(Long memberId){
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
+        Friendship friendship = new Friendship(member, member);
+        friendshipRepository.save(friendship);
+    }
     public void addFriend(Long memberId, Long friendId) {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new IllegalArgumentException("Invalid member ID"));
         Member friend = memberRepository.findById(friendId).orElseThrow(() -> new IllegalArgumentException("Invalid friend ID"));
