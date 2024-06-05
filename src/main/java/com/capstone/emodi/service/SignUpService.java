@@ -46,8 +46,5 @@ public class SignUpService {
                 .build();
 
         memberService.join(member);
-        friendshipService.selfFollow(member.getId());
     }
-
-
 }
