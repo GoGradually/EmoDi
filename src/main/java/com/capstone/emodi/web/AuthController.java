@@ -1,10 +1,9 @@
-package com.capstone.emodi.web.auth;
+package com.capstone.emodi.web;
 
 import com.capstone.emodi.exception.InvalidTokenException;
 import com.capstone.emodi.security.JwtTokenProvider;
-import com.capstone.emodi.web.dto.RefreshTokenDto;
-import com.capstone.emodi.web.response.ApiResponse;
-import io.swagger.v3.oas.annotations.media.Schema;
+import com.capstone.emodi.dto.RefreshTokenDto;
+import com.capstone.emodi.response.ApiResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

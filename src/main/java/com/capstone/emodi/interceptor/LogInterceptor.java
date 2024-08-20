@@ -1,4 +1,4 @@
-package com.capstone.emodi.web.interceptor;
+package com.capstone.emodi.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

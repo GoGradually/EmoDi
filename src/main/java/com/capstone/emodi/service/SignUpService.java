@@ -1,7 +1,7 @@
 package com.capstone.emodi.service;
 
 import com.capstone.emodi.domain.Member;
-import com.capstone.emodi.web.signup.SignUpController;
+import com.capstone.emodi.web.SignUpController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

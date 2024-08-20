@@ -1,9 +1,9 @@
-package com.capstone.emodi.web.login;
+package com.capstone.emodi.web;
 
 import com.capstone.emodi.service.LoginService;
 import com.capstone.emodi.service.MemberService;
-import com.capstone.emodi.web.dto.LoginDto;
-import com.capstone.emodi.web.response.ApiResponse;
+import com.capstone.emodi.dto.LoginDto;
+import com.capstone.emodi.response.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -33,7 +33,7 @@ public class LoginController {
     }
     @Getter
     @Setter
-    static class LoginRequest {
+    public static class LoginRequest {
         @NotBlank
         private String loginId;
         @NotBlank

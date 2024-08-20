@@ -3,6 +3,7 @@ package com.capstone.emodi.web.login;
 import com.capstone.emodi.repository.MemberRepository;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.capstone.emodi.service.LoginService;
+import com.capstone.emodi.web.LoginController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

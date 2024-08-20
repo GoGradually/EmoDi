@@ -1,4 +1,4 @@
-package com.capstone.emodi.domain.session;
+package com.capstone.emodi.repository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 

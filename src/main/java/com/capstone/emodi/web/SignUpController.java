@@ -1,10 +1,9 @@
-package com.capstone.emodi.web.signup;
+package com.capstone.emodi.web;
 
 import com.capstone.emodi.exception.DuplicateMemberException;
 import com.capstone.emodi.service.SignUpService;
-import com.capstone.emodi.security.JwtTokenProvider;
-import com.capstone.emodi.web.dto.SignupDto;
-import com.capstone.emodi.web.response.ApiResponse;
+import com.capstone.emodi.dto.SignupDto;
+import com.capstone.emodi.response.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,9 +14,6 @@ import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")

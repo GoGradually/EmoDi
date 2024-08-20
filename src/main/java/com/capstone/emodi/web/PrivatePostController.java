@@ -1,4 +1,4 @@
-package com.capstone.emodi.web.privatepost;
+package com.capstone.emodi.web;
 
 import com.capstone.emodi.domain.Member;
 import com.capstone.emodi.domain.PrivatePost;
@@ -8,8 +8,8 @@ import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.capstone.emodi.service.MemberService;
 import com.capstone.emodi.service.PrivatePostService;
-import com.capstone.emodi.web.dto.PrivatePostDto;
-import com.capstone.emodi.web.response.ApiResponse;
+import com.capstone.emodi.dto.PrivatePostDto;
+import com.capstone.emodi.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;

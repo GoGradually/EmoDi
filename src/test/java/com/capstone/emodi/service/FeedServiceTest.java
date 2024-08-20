@@ -10,7 +10,7 @@ import com.capstone.emodi.domain.Member;
 import com.capstone.emodi.repository.MemberRepository;
 import com.capstone.emodi.domain.Post;
 import com.capstone.emodi.repository.PostRepository;
-import com.capstone.emodi.web.dto.PostDto;
+import com.capstone.emodi.dto.PostDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package com.capstone.emodi.service;
 
 import com.capstone.emodi.repository.PostRepository;
-import com.capstone.emodi.web.dto.PostDto;
+import com.capstone.emodi.dto.PostDto;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

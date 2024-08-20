@@ -1,4 +1,4 @@
-package com.capstone.emodi.web.response;
+package com.capstone.emodi.response;
 
 import lombok.Getter;
 import lombok.Setter;

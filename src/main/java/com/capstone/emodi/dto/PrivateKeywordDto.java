@@ -1,14 +1,15 @@
-package com.capstone.emodi.web.dto;
+package com.capstone.emodi.dto;
 
-import com.capstone.emodi.domain.Keyword;
+import com.capstone.emodi.domain.PrivateKeyword;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
 @Schema
-public class KeywordDto {
+public class PrivateKeywordDto {
+
     private String keywordTag;
-    public KeywordDto(Keyword keyword) {
+    public PrivateKeywordDto(PrivateKeyword keyword) {
         this.keywordTag = keyword.getKeywordTag();
     }
 }

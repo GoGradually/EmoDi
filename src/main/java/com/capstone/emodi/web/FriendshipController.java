@@ -1,9 +1,9 @@
-package com.capstone.emodi.web.friendship;
+package com.capstone.emodi.web;
 
 import com.capstone.emodi.domain.Member;
 import com.capstone.emodi.service.FriendshipService;
-import com.capstone.emodi.web.dto.MemberDto;
-import com.capstone.emodi.web.response.ApiResponse;
+import com.capstone.emodi.dto.MemberDto;
+import com.capstone.emodi.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,6 @@
-package com.capstone.emodi.web.feed;
+package com.capstone.emodi.web;
 import com.capstone.emodi.service.FeedService;
-import com.capstone.emodi.web.dto.PostDto;
+import com.capstone.emodi.dto.PostDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

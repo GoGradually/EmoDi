@@ -16,7 +16,7 @@ import com.capstone.emodi.domain.Post;
 import com.capstone.emodi.repository.PostRepository;
 import com.capstone.emodi.service.FeedService;
 import com.capstone.emodi.service.LikeService;
-import com.capstone.emodi.web.dto.PostDto;
+import com.capstone.emodi.dto.PostDto;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
