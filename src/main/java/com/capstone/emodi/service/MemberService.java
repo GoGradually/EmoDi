@@ -1,8 +1,8 @@
 // MemberService.java
 package com.capstone.emodi.service;
 
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.member.MemberRepository;
+import com.capstone.emodi.domain.Member;
+import com.capstone.emodi.repository.MemberRepository;
 import com.capstone.emodi.exception.DuplicateMemberException;
 import com.capstone.emodi.exception.MemberNotFoundException;
 import com.capstone.emodi.utils.FileUploadUtil;

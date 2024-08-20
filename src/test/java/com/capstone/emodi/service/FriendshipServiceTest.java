@@ -1,9 +1,8 @@
 package com.capstone.emodi.service;
 
-import com.capstone.emodi.domain.friendship.Friendship;
-import com.capstone.emodi.domain.friendship.FriendshipRepository;
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.member.MemberRepository;
+import com.capstone.emodi.repository.FriendshipRepository;
+import com.capstone.emodi.domain.Member;
+import com.capstone.emodi.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

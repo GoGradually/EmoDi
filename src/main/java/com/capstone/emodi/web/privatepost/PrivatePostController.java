@@ -1,7 +1,7 @@
 package com.capstone.emodi.web.privatepost;
 
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.privatepost.PrivatePost;
+import com.capstone.emodi.domain.Member;
+import com.capstone.emodi.domain.PrivatePost;
 import com.capstone.emodi.exception.FileUploadException;
 import com.capstone.emodi.exception.MemberNotFoundException;
 import com.capstone.emodi.exception.PostNotFoundException;
@@ -16,7 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

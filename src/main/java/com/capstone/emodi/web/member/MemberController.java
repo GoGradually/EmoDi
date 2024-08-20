@@ -1,6 +1,6 @@
 package com.capstone.emodi.web.member;
 
-import com.capstone.emodi.domain.member.Member;
+import com.capstone.emodi.domain.Member;
 import com.capstone.emodi.exception.MemberNotFoundException;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.capstone.emodi.service.FriendshipService;
@@ -13,7 +13,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;

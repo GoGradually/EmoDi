@@ -1,4 +1,5 @@
-package com.capstone.emodi.domain.friendship;
+package com.capstone.emodi.repository;
+import com.capstone.emodi.domain.Friendship;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

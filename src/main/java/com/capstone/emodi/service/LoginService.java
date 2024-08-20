@@ -1,15 +1,11 @@
 package com.capstone.emodi.service;
 
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.member.MemberRepository;
+import com.capstone.emodi.domain.Member;
+import com.capstone.emodi.repository.MemberRepository;
 import com.capstone.emodi.exception.LoginFailedException;
 import com.capstone.emodi.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

@@ -1,5 +1,6 @@
-package com.capstone.emodi.domain.like;
+package com.capstone.emodi.repository;
 
+import com.capstone.emodi.domain.Like;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

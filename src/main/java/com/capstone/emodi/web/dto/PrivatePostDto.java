@@ -1,7 +1,6 @@
 package com.capstone.emodi.web.dto;
 
-import com.capstone.emodi.domain.privatekeyword.PrivateKeyword;
-import com.capstone.emodi.domain.privatepost.PrivatePost;
+import com.capstone.emodi.domain.PrivatePost;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

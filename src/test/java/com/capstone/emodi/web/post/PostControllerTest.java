@@ -1,19 +1,16 @@
 package com.capstone.emodi.web.post;
 
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.member.MemberRepository;
-import com.capstone.emodi.domain.post.Post;
-import com.capstone.emodi.domain.post.PostRepository;
+import com.capstone.emodi.domain.Member;
+import com.capstone.emodi.repository.MemberRepository;
+import com.capstone.emodi.domain.Post;
+import com.capstone.emodi.repository.PostRepository;
 import com.capstone.emodi.security.JwtTokenProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;

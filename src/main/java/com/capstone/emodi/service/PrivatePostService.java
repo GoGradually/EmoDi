@@ -1,10 +1,10 @@
 package com.capstone.emodi.service;
 
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.privatekeyword.PrivateKeyword;
-import com.capstone.emodi.domain.privatekeyword.PrivateKeywordRepository;
-import com.capstone.emodi.domain.privatepost.PrivatePost;
-import com.capstone.emodi.domain.privatepost.PrivatePostRepository;
+import com.capstone.emodi.domain.Member;
+import com.capstone.emodi.domain.PrivateKeyword;
+import com.capstone.emodi.repository.PrivateKeywordRepository;
+import com.capstone.emodi.domain.PrivatePost;
+import com.capstone.emodi.repository.PrivatePostRepository;
 import com.capstone.emodi.exception.FileUploadException;
 import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.utils.FileUploadUtil;
@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;

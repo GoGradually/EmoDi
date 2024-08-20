@@ -1,7 +1,7 @@
-package com.capstone.emodi.domain.keyword;
+package com.capstone.emodi.repository;
 
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.post.Post;
+import com.capstone.emodi.domain.Keyword;
+import com.capstone.emodi.domain.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface KeywordRepository extends JpaRepository<Keyword, Long> {

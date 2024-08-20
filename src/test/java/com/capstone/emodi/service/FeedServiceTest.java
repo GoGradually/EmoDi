@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 
-import com.capstone.emodi.domain.friendship.Friendship;
-import com.capstone.emodi.domain.friendship.FriendshipRepository;
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.member.MemberRepository;
-import com.capstone.emodi.domain.post.Post;
-import com.capstone.emodi.domain.post.PostRepository;
+import com.capstone.emodi.domain.Friendship;
+import com.capstone.emodi.repository.FriendshipRepository;
+import com.capstone.emodi.domain.Member;
+import com.capstone.emodi.repository.MemberRepository;
+import com.capstone.emodi.domain.Post;
+import com.capstone.emodi.repository.PostRepository;
 import com.capstone.emodi.web.dto.PostDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

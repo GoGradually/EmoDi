@@ -1,11 +1,11 @@
 // PostService.java
 package com.capstone.emodi.service;
 
-import com.capstone.emodi.domain.keyword.Keyword;
-import com.capstone.emodi.domain.keyword.KeywordRepository;
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.post.Post;
-import com.capstone.emodi.domain.post.PostRepository;
+import com.capstone.emodi.domain.Keyword;
+import com.capstone.emodi.repository.KeywordRepository;
+import com.capstone.emodi.domain.Member;
+import com.capstone.emodi.domain.Post;
+import com.capstone.emodi.repository.PostRepository;
 import com.capstone.emodi.exception.FileUploadException;
 import com.capstone.emodi.exception.PostNotFoundException;
 import com.capstone.emodi.utils.FileUploadUtil;
@@ -13,13 +13,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional

@@ -1,14 +1,12 @@
 package com.capstone.emodi.service;
 
-import com.capstone.emodi.domain.friendship.Friendship;
-import com.capstone.emodi.domain.friendship.FriendshipRepository;
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.member.MemberRepository;
-import com.capstone.emodi.web.dto.FriendshipDto;
+import com.capstone.emodi.domain.Friendship;
+import com.capstone.emodi.repository.FriendshipRepository;
+import com.capstone.emodi.domain.Member;
+import com.capstone.emodi.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

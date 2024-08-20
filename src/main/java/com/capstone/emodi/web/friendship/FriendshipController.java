@@ -1,16 +1,13 @@
 package com.capstone.emodi.web.friendship;
 
-import com.capstone.emodi.domain.friendship.Friendship;
-import com.capstone.emodi.domain.member.Member;
+import com.capstone.emodi.domain.Member;
 import com.capstone.emodi.service.FriendshipService;
-import com.capstone.emodi.web.dto.FriendshipDto;
 import com.capstone.emodi.web.dto.MemberDto;
 import com.capstone.emodi.web.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

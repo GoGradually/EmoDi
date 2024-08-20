@@ -1,8 +1,7 @@
 package com.capstone.emodi.web.post;
 
-import com.capstone.emodi.domain.keyword.Keyword;
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.post.Post;
+import com.capstone.emodi.domain.Member;
+import com.capstone.emodi.domain.Post;
 import com.capstone.emodi.exception.FileUploadException;
 import com.capstone.emodi.exception.MemberNotFoundException;
 import com.capstone.emodi.exception.PostNotFoundException;
@@ -18,9 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Key;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

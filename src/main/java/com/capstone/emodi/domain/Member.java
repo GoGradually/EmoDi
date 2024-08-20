@@ -1,7 +1,5 @@
-package com.capstone.emodi.domain.member;
+package com.capstone.emodi.domain;
 
-import com.capstone.emodi.domain.post.Post;
-import com.capstone.emodi.domain.privatepost.PrivatePost;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;

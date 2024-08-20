@@ -1,7 +1,5 @@
-package com.capstone.emodi.domain.like;
+package com.capstone.emodi.domain;
 
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.post.Post;
 import jakarta.persistence.*;
 import lombok.Getter;
 

@@ -1,11 +1,11 @@
 package com.capstone.emodi.service;
 
-import com.capstone.emodi.domain.like.Like;
-import com.capstone.emodi.domain.like.LikeRepository;
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.member.MemberRepository;
-import com.capstone.emodi.domain.post.Post;
-import com.capstone.emodi.domain.post.PostRepository;
+import com.capstone.emodi.domain.Like;
+import com.capstone.emodi.repository.LikeRepository;
+import com.capstone.emodi.domain.Member;
+import com.capstone.emodi.repository.MemberRepository;
+import com.capstone.emodi.domain.Post;
+import com.capstone.emodi.repository.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

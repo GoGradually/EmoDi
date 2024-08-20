@@ -1,7 +1,8 @@
-package com.capstone.emodi.domain.privatepost;
+package com.capstone.emodi.domain;
 
-import com.capstone.emodi.domain.member.Member;
-import com.capstone.emodi.domain.privatekeyword.PrivateKeyword;
+import com.capstone.emodi.domain.Keyword;
+import com.capstone.emodi.domain.Like;
+import com.capstone.emodi.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -13,11 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "private_posts")
+@Table(name = "posts")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PrivatePost {
-
+public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,20 +35,25 @@ public class PrivatePost {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-
-    @OneToMany(mappedBy = "privatePost", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PrivateKeyword> keyword = new ArrayList<>();
-
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Keyword> keyword = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Like> likes = new ArrayList<>();
+
+    public int getLikeCount() {
+        return likes.size();
+    }
 
     @PrePersist
     public void setCreatedAt() {
         this.createdAt = this.createdAt == null ? LocalDateTime.now() : this.createdAt;
     }
     @Builder
-    public PrivatePost(String title, String content, String imagePath, LocalDateTime createdAt, Member member) {
+    public Post(String title, String content, String imagePath, LocalDateTime createdAt, Member member, List<String> keyword) {
         this.title = title;
         this.content = content;
         this.imagePath = imagePath;
@@ -56,27 +61,25 @@ public class PrivatePost {
         this.member = member;
     }
     @Builder
-    public PrivatePost(String title, String content, LocalDateTime createdAt, Member member) {
+    public Post(String title, String content, LocalDateTime createdAt, Member member, List<String> keyword) {
         this.title = title;
         this.content = content;
         this.member = member;
         this.createdAt = createdAt;
     }
     @Builder
-    public PrivatePost(String title, String content, String imagePath, Member member) {
+    public Post(String title, String content, String imagePath, Member member) {
         this.title = title;
         this.content = content;
         this.imagePath = imagePath;
         this.member = member;
     }
     @Builder
-    public PrivatePost(String title, String content, Member member) {
+    public Post(String title, String content, Member member) {
         this.title = title;
         this.content = content;
         this.member = member;
     }
-
-
 
     // 게시글 수정 메서드
     public void update(String title, String content, String imagePath) {
@@ -84,8 +87,7 @@ public class PrivatePost {
         this.content = content;
         this.imagePath = imagePath;
     }
-
     public String getImageUrl(){
-        return "https://emo-di.com/privateImages/" + imagePath;
+        return "https://emo-di.com/images/" + imagePath;
     }
 }

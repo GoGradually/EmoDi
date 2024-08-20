@@ -1,6 +1,6 @@
-package com.capstone.emodi.domain.privatepost;
+package com.capstone.emodi.repository;
 
-import com.capstone.emodi.domain.post.Post;
+import com.capstone.emodi.domain.PrivatePost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

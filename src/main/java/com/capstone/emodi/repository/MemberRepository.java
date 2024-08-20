@@ -1,5 +1,6 @@
-package com.capstone.emodi.domain.member;
+package com.capstone.emodi.repository;
 
+import com.capstone.emodi.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

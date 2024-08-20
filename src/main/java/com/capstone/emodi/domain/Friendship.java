@@ -1,10 +1,7 @@
-package com.capstone.emodi.domain.friendship;
+package com.capstone.emodi.domain;
 
-import com.capstone.emodi.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter

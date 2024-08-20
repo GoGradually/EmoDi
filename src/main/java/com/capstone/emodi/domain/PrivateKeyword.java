@@ -1,6 +1,5 @@
-package com.capstone.emodi.domain.privatekeyword;
+package com.capstone.emodi.domain;
 
-import com.capstone.emodi.domain.privatepost.PrivatePost;
 import jakarta.persistence.*;
 import lombok.Getter;
 
