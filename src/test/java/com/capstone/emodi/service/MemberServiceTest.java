@@ -7,8 +7,11 @@ import com.capstone.emodi.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -24,10 +27,10 @@ import static org.mockito.Mockito.verify;
 @Transactional
 public class MemberServiceTest {
 
-    @Autowired
+    @InjectMocks
     private MemberService memberService;
 
-    @Autowired
+    @Mock
     private MemberRepository memberRepository;
 
     private Member member;
